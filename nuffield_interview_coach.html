@@ -5,704 +5,380 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nuffield Interview Coach</title>
 <style>
-  :root {
-    --bg: #0f1117;
-    --bg2: #171923;
-    --bg3: #1e2330;
-    --border: #2a3145;
-    --accent: #4f7fff;
-    --accent2: #38d9a9;
-    --accent3: #ffa94d;
-    --danger: #ff6b6b;
-    --text: #e8ecf4;
-    --text2: #8892a4;
-    --text3: #525d72;
-    --radius: 10px;
-    --radius-lg: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
-  
-  /* HEADER */
-  .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .logo { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-  .logo span { color: var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .time-badge { font-size: 12px; color: var(--text2); background: var(--bg3); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
-  .time-badge b { color: var(--accent2); }
-  .days-badge { font-size: 12px; color: var(--text2); }
-  .days-badge b { color: var(--accent3); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:     #0f1117;
+  --bg2:    #171923;
+  --bg3:    #1e2330;
+  --border: #2a3145;
+  --accent: #4f7fff;
+  --green:  #38d9a9;
+  --orange: #ffa94d;
+  --red:    #ff6b6b;
+  --purple: #c084fc;
+  --text:   #e8ecf4;
+  --text2:  #8892a4;
+  --text3:  #525d72;
+  --r:      10px;
+}
+html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
 
-  /* TABS */
-  .tabs { display: flex; gap: 2px; padding: 12px 20px 0; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; }
-  .tab { padding: 8px 16px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; border-radius: 6px 6px 0 0; }
-  .tab:hover { color: var(--text); background: var(--bg3); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+/* ── HEADER ── */
+.hdr { height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+.hdr-logo { font-size: 14px; font-weight: 700; }
+.hdr-logo span { color: var(--accent); }
+.hdr-spacer { flex: 1; }
+.pill { font-size: 11px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; color: var(--text2); white-space: nowrap; }
+.pill b { color: var(--green); }
+.pill.days b { color: var(--orange); }
 
-  /* CONTENT */
-  .content { padding: 20px; max-width: 760px; margin: 0 auto; }
-  .panel { display: none; }
-  .panel.active { display: block; }
+/* ── TABS ── */
+.tabs { height: 44px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; padding: 0 8px; flex-shrink: 0; }
+.tab { padding: 0 16px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: color .15s; }
+.tab:hover { color: var(--text); }
+.tab.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
-  /* CARDS */
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
-  .card-sm { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
-  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 14px; }
+/* ── LAYOUT ── */
+.app { display: flex; flex-direction: column; height: 100vh; }
+.body { flex: 1; overflow: hidden; position: relative; }
+.panel { position: absolute; inset: 0; display: none; overflow: hidden; }
+.panel.on { display: flex; }
 
-  /* BUTTONS */
-  btn, button { cursor: pointer; border: none; outline: none; font-family: inherit; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #3d6ce0; }
-  .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--text); border-color: var(--text3); }
-  .btn-green { background: #1a4d3e; color: var(--accent2); border: 1px solid #2a7a5e; }
-  .btn-green:hover { background: #1f5c4a; }
-  .btn-red { background: #4d1f1f; color: var(--danger); border: 1px solid #7a2a2a; }
-  .btn-red:hover { background: #5c2424; }
-  .btn-orange { background: #4d3a1a; color: var(--accent3); border: 1px solid #7a5a28; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .btn-lg { padding: 12px 24px; font-size: 15px; }
-  .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; }
+/* ── BLOCOS LAYOUT ── */
+.bl-sidebar { width: 240px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; padding: 12px 0; }
+.bl-content { flex: 1; overflow-y: auto; padding: 20px; }
 
-  /* BADGE */
-  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
-  .badge-blue { background: #1a2a4d; color: var(--accent); }
-  .badge-green { background: #1a3d30; color: var(--accent2); }
-  .badge-orange { background: #3d2a10; color: var(--accent3); }
-  .badge-red { background: #3d1a1a; color: var(--danger); }
-  .badge-gray { background: var(--bg3); color: var(--text2); }
+.bl-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); padding: 14px 16px 6px; }
+.bl-cat { padding: 8px 16px; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 3px solid transparent; transition: all .12s; display: flex; align-items: center; gap: 8px; }
+.bl-cat:hover { color: var(--text); background: var(--bg3); }
+.bl-cat.on { color: var(--text); background: var(--bg3); border-left-color: var(--accent); font-weight: 500; }
+.bl-cat .count { margin-left: auto; font-size: 11px; color: var(--text3); background: var(--bg); border-radius: 10px; padding: 1px 7px; }
 
-  /* PROGRESS */
-  .progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+.bl-header { margin-bottom: 16px; }
+.bl-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.bl-sub { font-size: 13px; color: var(--text2); }
 
-  /* TIMER */
-  .timer-ring { width: 120px; height: 120px; margin: 0 auto 16px; position: relative; }
-  .timer-ring svg { transform: rotate(-90deg); }
-  .timer-ring .timer-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--text); }
-  .timer-ring .timer-sub { font-size: 11px; color: var(--text2); margin-top: -4px; }
+.item-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 10px; }
+.item-en { font-size: 15px; color: var(--text); line-height: 1.5; margin-bottom: 5px; }
+.item-pt { font-size: 12px; color: var(--text3); font-style: italic; line-height: 1.5; }
+.item-note { font-size: 11px; color: var(--orange); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); line-height: 1.5; }
+.item-btns { display: flex; gap: 8px; margin-top: 12px; }
+.ibtn { padding: 5px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: inherit; transition: all .12s; }
+.ibtn:hover { color: var(--text); border-color: var(--text3); }
+.ibtn.playing { color: var(--green); border-color: var(--green); background: #0f2a22; }
 
-  /* MIC */
-  .mic-area { text-align: center; padding: 24px 0; }
-  .mic-btn { width: 72px; height: 72px; border-radius: 50%; border: none; cursor: pointer; font-size: 28px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-  .mic-btn.idle { background: var(--bg3); border: 2px solid var(--border); }
-  .mic-btn.listening { background: #4d1f1f; border: 2px solid var(--danger); animation: pulse 1.2s infinite; }
-  .mic-btn.done { background: #1a3d30; border: 2px solid var(--accent2); }
-  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+/* ── LIFELINES ── */
+.ll-panel { padding: 20px; overflow-y: auto; }
+.ll-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.ll-card { border-radius: var(--r); padding: 14px 16px; border: 1px solid; }
+.ll-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.ll-phrase { font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 5px; }
+.ll-pt { font-size: 12px; opacity: .65; margin-bottom: 12px; line-height: 1.4; }
+.ll-btn { padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: inherit; font-family: inherit; }
+.ll-btn:hover { background: rgba(255,255,255,.16); }
 
-  /* TRANSCRIPT */
-  .transcript { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--text2); min-height: 60px; line-height: 1.6; margin-top: 12px; }
-  .transcript .word-ok { color: var(--accent2); }
-  .transcript .word-miss { color: var(--danger); text-decoration: line-through; }
-  .transcript .word-extra { color: var(--accent3); }
+/* ── CRONÔMETRO ── */
+.ct-panel { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.ct-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; }
+.ct-prompt-box { background: var(--bg3); border: 1px solid var(--accent); border-radius: var(--r); padding: 18px; margin-bottom: 20px; text-align: center; }
+.ct-prompt-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 6px; }
+.ct-prompt-text { font-size: 15px; font-weight: 500; line-height: 1.6; color: var(--text); }
+.ct-dur-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.dur-btn { padding: 7px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: inherit; }
+.dur-btn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.ct-actions { display: flex; gap: 10px; justify-content: center; }
+.btn-main { padding: 11px 28px; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; background: var(--accent); color: #fff; font-family: inherit; }
+.btn-ghost { padding: 11px 20px; border-radius: 9px; font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: inherit; }
+.ct-ring-wrap { display: flex; flex-direction: column; align-items: center; margin: 8px 0 20px; }
+.ct-ring-wrap svg { display: block; }
+.ct-ring-num { font-size: 36px; font-weight: 700; text-align: center; margin-top: -8px; }
+.ct-ring-sub { font-size: 12px; color: var(--text2); text-align: center; }
+.mic-area { text-align: center; padding: 12px 0; }
+.mic-btn { width: 64px; height: 64px; border-radius: 50%; border: 2px solid; cursor: pointer; font-size: 24px; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; }
+.mic-idle { background: var(--bg3); border-color: var(--border); }
+.mic-rec { background: #3d1a1a; border-color: var(--red); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+.ct-hist-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.ct-hist-row:last-child { border-bottom: none; }
+.badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; }
+.bg { background: #1a3d30; color: var(--green); }
+.bo { background: #3d2a10; color: var(--orange); }
 
-  /* SCORE */
-  .score-row { display: flex; gap: 12px; margin-top: 12px; }
-  .score-box { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
-  .score-val { font-size: 24px; font-weight: 700; }
-  .score-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+/* ── VOCABULÁRIO ── */
+.vc-panel { display: flex; flex-direction: column; overflow: hidden; }
+.vc-top { padding: 16px 20px 0; flex-shrink: 0; }
+.vc-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; text-align: center; }
+.stat-n { font-size: 22px; font-weight: 700; }
+.stat-l { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.vc-filters { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 12px; }
+.flt { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: inherit; }
+.flt.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.vc-grid { flex: 1; overflow-y: auto; padding: 0 20px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; align-content: start; }
+.vc-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; cursor: pointer; transition: border-color .15s; display: flex; flex-direction: column; gap: 2px; }
+.vc-card:hover { border-color: var(--accent); }
+.vc-card.done { border-color: #2a5a45; background: #0a1a14; }
+.vc-en { font-size: 13px; font-weight: 600; }
+.vc-pron { font-size: 11px; color: var(--orange); }
+.vc-pt { font-size: 12px; color: var(--text2); }
+.vc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.vc-stars { font-size: 13px; }
+.vc-speak { font-size: 11px; padding: 2px 8px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); cursor: pointer; font-family: inherit; }
 
-  /* KEYWORD PILLS */
-  .kw-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .kw-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-  .kw-found { background: #1a3d30; color: var(--accent2); border: 1px solid #2a5a45; }
-  .kw-miss { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .bl-sidebar { display: none; }
+  .bl-mobile-sel { display: block !important; }
+  .bl-content { padding: 12px; }
+  .ll-grid { grid-template-columns: 1fr; }
+  .vc-grid { grid-template-columns: 1fr; }
+  .hdr-logo { font-size: 13px; }
+  .tab { padding: 0 10px; font-size: 12px; }
+  #aq-sidebar { width: 100%; max-height: 180px; border-right: none; border-bottom: 1px solid var(--border); }
+  #aq-layout { flex-direction: column; }
+  .pill { display: none; }
+  .pill:first-of-type { display: flex; }
+}
+.bl-mobile-sel { display: none; width: 100%; margin-bottom: 14px; padding: 9px 12px; border-radius: var(--r); border: 1px solid var(--border); background: var(--bg3); color: var(--text); font-size: 13px; font-family: inherit; }
 
-  /* QUESTION CARD */
-  .q-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .q-nav .q-count { font-size: 13px; color: var(--text2); }
-  .q-text { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
-  .q-tag { font-size: 11px; color: var(--text3); margin-bottom: 16px; }
-  .model-answer { background: var(--bg3); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px; font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 14px; }
-  .model-answer .highlight { color: var(--accent3); font-weight: 600; }
-  .tips-list { list-style: none; }
-  .tips-list li { font-size: 12px; color: var(--text2); padding: 4px 0; padding-left: 16px; position: relative; }
-  .tips-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
-
-  /* BLOCOS */
-  .bloco-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
-  .bloco-card:hover { border-color: var(--accent); }
-  .bloco-card.playing { border-color: var(--accent2); }
-  .bloco-en { font-size: 14px; color: var(--text); line-height: 1.5; }
-  .bloco-pt { font-size: 12px; color: var(--text3); margin-top: 4px; font-style: italic; }
-  .bloco-controls { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
-
-  /* LIFELINE */
-  .lifeline-card { border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; border: 1px solid; }
-  .lifeline-situation { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-  .lifeline-phrase { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .lifeline-pt { font-size: 12px; opacity: 0.7; margin-bottom: 12px; }
-
-  /* TIMER MODE */
-  .prompt-box { background: var(--bg3); border: 1px solid var(--accent); border-radius: var(--radius-lg); padding: 20px; text-align: center; margin-bottom: 20px; }
-  .prompt-box .prompt-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-  .prompt-box .prompt-text { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.5; }
-  .duration-select { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
-  .dur-btn { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.15s; }
-  .dur-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-  /* VOCAB */
-  .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .vocab-item { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: border-color 0.15s; }
-  .vocab-item:hover { border-color: var(--accent); }
-  .vocab-item.mastered { border-color: #2a5a45; background: #0f1f1a; }
-  .vocab-en { font-size: 13px; font-weight: 600; color: var(--text); }
-  .vocab-pron { font-size: 11px; color: var(--accent3); margin: 2px 0; }
-  .vocab-pt { font-size: 12px; color: var(--text2); }
-  .vocab-stars { font-size: 14px; margin-top: 6px; }
-
-  /* FOLLOW-UP */
-  .followup-btn { display: block; width: 100%; text-align: left; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; color: var(--text2); cursor: pointer; margin-bottom: 6px; transition: all 0.15s; font-family: inherit; }
-  .followup-btn:hover { border-color: var(--accent3); color: var(--text); }
-
-  /* FEEDBACK OVERLAY */
-  .feedback-overlay { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-top: 16px; }
-  .feedback-verdict { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 12px; }
-
-  /* STATS ROW */
-  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-  .stat-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
-  .stat-val { font-size: 22px; font-weight: 700; }
-  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-  /* INTERVIEW TIMER BAR */
-  .timer-bar-wrap { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
-  .timer-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s linear, background 0.3s; }
-
-  .hidden { display: none !important; }
-  .mt8 { margin-top: 8px; }
-  .mt16 { margin-top: 16px; }
-  .center { text-align: center; }
-  .flex { display: flex; align-items: center; }
-  .gap8 { gap: 8px; }
-  .gap12 { gap: 12px; }
-  .flex-1 { flex: 1; }
-
-  /* INTRO CARD */
-  .interview-start { text-align: center; padding: 32px 20px; }
-  .interview-start .big-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .interview-start .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
-  .type-select { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
-  .type-btn { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-  .type-btn.active { border-color: var(--accent); color: var(--accent); background: #1a2a4d; }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.mode-btn { padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--bg3); color:var(--text2); font-family:inherit; transition:all .12s; }
+.mode-btn.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+.item-card.practiced { border-color:#2a5a45; }
+.item-practiced-badge { font-size:10px; color:var(--green); margin-left:8px; }
+.item-en-hidden { filter:blur(5px); user-select:none; transition:filter .2s; cursor:pointer; }
+.item-en-hidden:hover { filter:blur(3px); }
+.item-en-hidden.revealed { filter:none; cursor:default; }
+.sr-result { margin-top:8px; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:600; }
+.sr-good { background:#0f2a22; color:var(--green); border:1px solid #2a5a45; }
+.sr-try { background:#2a1a10; color:var(--orange); border:1px solid #5a3a20; }
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="header">
-  <div class="logo">Nuffield <span>Interview Coach</span></div>
-  <div class="header-right">
-    <div class="days-badge">Entrevista 1 em <b id="days-to-go">--</b> dias</div>
-    <div class="time-badge">Hoje: <b id="today-time">0min</b></div>
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-logo">Nuffield <span>Coach</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="pill days">Entrevista em <b id="days-left">--</b> dias</div>
+    <div class="pill">🔥 <b id="streak-count">0</b> dias</div>
+    <div class="pill">Hoje <b id="today-min">0min</b></div>
   </div>
-</div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('blocos')">🧩 Blocos</div>
-  <div class="tab" onclick="switchTab('lifelines')">🛟 Lifelines</div>
-  <div class="tab" onclick="switchTab('cronometro')">⏱ Cronômetro</div>
-  <div class="tab" onclick="switchTab('vocab')">📚 Vocabulário</div>
-</div>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" onclick="goTab('blocos',this)">🧩 Blocos</div>
+    <div class="tab" onclick="goTab('lifelines',this)">🛟 Lifelines</div>
+    <div class="tab" onclick="goTab('cronometro',this)">⏱ Cronômetro</div>
+    <div class="tab" onclick="goTab('vocab',this)">📚 Vocabulário</div>
+    <div class="tab" onclick="goTab('audios',this)">🎬 Áudios Q&A</div>
+  </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     TAB 2: BLOCOS
-═══════════════════════════════════════════════════════ -->
-<div class="panel active" id="panel-blocos">
-  <div class="section-title">Blocos de conteúdo — memorize e recombine</div>
-  <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Frases curtas sobre seu perfil e projeto. Ouça, repita, grave. Você não precisa decorar respostas inteiras — precisa ter esses blocos prontos para recombinar na hora.</p>
+  <div class="body">
 
-  <div id="blocos-categories"></div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     TAB 3: LIFELINES
-═══════════════════════════════════════════════════════ -->
-<div class="panel" id="panel-lifelines">
-  <div class="section-title">Frases de socorro — decore 100%</div>
-  <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Essas frases salvam a entrevista quando você trava. Ouça, repita em voz alta, grave.</p>
-  <div id="lifelines-list"></div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     TAB 4: CRONÔMETRO
-═══════════════════════════════════════════════════════ -->
-<div class="panel" id="panel-cronometro">
-  <div class="section-title">Treino de fluência cronometrada</div>
-  <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">Fale sobre um tema do seu projeto por 30, 60 ou 90 segundos sem parar. O objetivo é ficar confortável com o silêncio e manter o raciocínio em inglês.</p>
-
-  <div class="card" style="text-align:center;padding:28px;">
-    <div id="ct-prompt-wrap">
-      <div class="prompt-box">
-        <div class="prompt-label">Seu tema de hoje</div>
-        <div class="prompt-text" id="ct-prompt">Toque em "Novo tema" para começar</div>
-      </div>
-      <div class="duration-select">
-        <button class="dur-btn active" onclick="setDuration(30,this)">30s</button>
-        <button class="dur-btn" onclick="setDuration(60,this)">60s</button>
-        <button class="dur-btn" onclick="setDuration(90,this)">90s</button>
-      </div>
-      <div class="flex gap8" style="justify-content:center;margin-bottom:20px;">
-        <button class="btn btn-ghost" onclick="newPrompt()">🎲 Novo tema</button>
-        <button class="btn btn-primary btn-lg" onclick="startCronometro()">▶ Iniciar</button>
+    <!-- ══ BLOCOS ══ -->
+    <div class="panel on" id="p-blocos">
+      <div class="bl-sidebar" id="bl-sidebar"></div>
+      <div class="bl-content" id="bl-content">
+        <select class="bl-mobile-sel" id="bl-mobile-sel" onchange="selectCat(+this.value)"></select>
+        <div id="bl-mode-bar" style="display:flex;gap:6px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Modo:</span>
+          <button class="mode-btn on" onclick="setBlMode('read',this)" title="Leia e ouça">👁 Ler</button>
+          <button class="mode-btn" onclick="setBlMode('shadow',this)" title="Ouça e repita sem ver o EN">🎧 Shadow</button>
+          <button class="mode-btn" onclick="setBlMode('produce',this)" title="Veja o PT e produza o EN">🗣 Produzir</button>
+        </div>
+        <div id="bl-items"></div>
       </div>
     </div>
 
-    <div id="ct-running" class="hidden">
-      <div class="timer-ring">
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg3)" stroke-width="8"/>
-          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent2)" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="0" id="ct-ring" stroke-linecap="round"/>
-        </svg>
-        <div class="timer-text"><span id="ct-seconds">30</span><br><span class="timer-sub">seg</span></div>
-      </div>
-      <div class="prompt-box" style="margin-bottom:16px;">
-        <div class="prompt-label">Fale sobre</div>
-        <div class="prompt-text" id="ct-prompt-running">—</div>
-      </div>
-      <div class="mic-area" style="padding:0 0 16px;">
-        <button class="mic-btn listening" id="ct-mic-btn" onclick="stopCronometro()">⏹</button>
-        <div style="font-size:12px;color:var(--danger);margin-top:8px;">Gravando... toque para parar</div>
+    <!-- ══ LIFELINES ══ -->
+    <div class="panel" id="p-lifelines">
+      <div class="ll-panel" style="width:100%">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Frases de socorro — decore 100%. Toque para ouvir.</div>
+        <div class="ll-grid" id="ll-grid"></div>
       </div>
     </div>
 
-    <div id="ct-done" class="hidden">
-      <div style="font-size:40px;margin-bottom:12px;" id="ct-result-emoji">⏱</div>
-      <div style="font-size:18px;font-weight:700;" id="ct-result-title"></div>
-      <div style="font-size:13px;color:var(--text2);margin:8px 0 20px;" id="ct-result-sub"></div>
-      <div class="flex gap8" style="justify-content:center;">
-        <button class="btn btn-ghost" onclick="resetCronometro()">↩ Tentar de novo</button>
-        <button class="btn btn-primary" onclick="newPromptAndReset()">Novo tema →</button>
+    <!-- ══ CRONÔMETRO ══ -->
+    <div class="panel" id="p-cronometro" style="overflow-y:auto;">
+      <div class="ct-panel" style="max-width:560px;margin:0 auto;width:100%;">
+        <div class="ct-card" id="ct-setup">
+          <div class="ct-prompt-box">
+            <div class="ct-prompt-label">Tema para praticar</div>
+            <div class="ct-prompt-text" id="ct-prompt">Toque em "Novo tema" para começar</div>
+          </div>
+          <div class="ct-dur-row">
+            <button class="dur-btn on" onclick="setDur(30,this)">30s</button>
+            <button class="dur-btn" onclick="setDur(60,this)">60s</button>
+            <button class="dur-btn" onclick="setDur(90,this)">90s</button>
+          </div>
+          <div class="ct-actions">
+            <button class="btn-ghost" onclick="newPrompt()">🎲 Novo tema</button>
+            <button class="btn-main" onclick="startCt()">▶ Iniciar</button>
+          </div>
+        </div>
+
+        <div class="ct-card" id="ct-running" style="display:none;text-align:center;">
+          <div class="ct-prompt-box" style="margin-bottom:16px;">
+            <div class="ct-prompt-label">Fale sobre</div>
+            <div class="ct-prompt-text" id="ct-run-prompt"></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:12px;color:var(--text2);">Scaffold:</span>
+          <button id="scaffold-btn" onclick="toggleScaffold()" style="padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;">Mostrar início</button>
+          <span id="scaffold-text" style="font-size:13px;color:var(--accent);font-weight:600;"></span>
+        </div>
+        <div class="ct-ring-wrap">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="58" fill="none" stroke="#1e2330" stroke-width="10"/>
+              <circle id="ct-ring" cx="70" cy="70" r="58" fill="none" stroke="#38d9a9" stroke-width="10"
+                stroke-dasharray="364.4" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="ct-ring-num" id="ct-num">30</div>
+            <div class="ct-ring-sub">segundos restantes</div>
+          </div>
+          <div class="mic-area">
+            <button class="mic-btn mic-rec" onclick="stopCt(false)">⏹</button>
+            <div style="font-size:12px;color:var(--red);margin-top:8px;">Gravando — toque para parar</div>
+          </div>
+        </div>
+
+        <div class="ct-card" id="ct-done" style="display:none;text-align:center;padding:32px;">
+          <div style="font-size:40px;margin-bottom:10px;" id="ct-emoji">⏱</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:6px;" id="ct-result-title"></div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:24px;" id="ct-result-sub"></div>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <button class="btn-ghost" onclick="resetCt()">↩ Repetir</button>
+            <button class="btn-main" onclick="newPrompt();resetCt()">Novo tema →</button>
+          </div>
+        </div>
+
+        <div class="ct-card">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;">Histórico de hoje</div>
+          <div id="ct-hist">Nenhum treino ainda.</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="card" style="margin-top:0;">
-    <div class="section-title">Histórico de hoje</div>
-    <div id="ct-history" style="font-size:13px;color:var(--text2);">Nenhum treino ainda.</div>
-  </div>
-</div>
+    <!-- ══ VOCABULÁRIO ══ -->
+    <div class="panel" id="p-vocab" style="flex-direction:column;">
+      <div class="vc-panel" style="height:100%;">
+        <div class="vc-top">
+          <div class="vc-stats">
+            <div class="stat"><div class="stat-n" id="v-tot">0</div><div class="stat-l">Total</div></div>
+            <div class="stat"><div class="stat-n" style="color:var(--green)" id="v-dom">0</div><div class="stat-l">Dominadas</div></div>
+            <div class="stat"><div class="stat-n" style="color:var(--orange)" id="v-pct">0%</div><div class="stat-l">Progresso</div></div>
+          </div>
+          <div class="vc-filters" id="vc-filters"></div>
+        </div>
+        <div class="vc-grid" id="vc-grid"></div>
+      </div>
+    </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     TAB 5: VOCABULÁRIO
-═══════════════════════════════════════════════════════ -->
-<div class="panel" id="panel-vocab">
-  <div class="section-title">Vocabulário crítico do seu tema</div>
-  <div class="stats-row" style="margin-bottom:16px;">
-    <div class="stat-box"><div class="stat-val" id="v-total">0</div><div class="stat-lbl">Total</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--accent2);" id="v-mastered">0</div><div class="stat-lbl">Dominadas</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--accent3);" id="v-pct">0%</div><div class="stat-lbl">Progresso</div></div>
-  </div>
-  <div id="vocab-filters" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;"></div>
-  <div class="vocab-grid" id="vocab-grid"></div>
-</div>
+    <!-- ══ ÁUDIOS Q&A ══ -->
+    <div class="panel" id="p-audios" style="flex-direction:column;overflow:hidden;">
+      <div id="aq-layout" style="display:flex;height:100%;overflow:hidden;">
 
-</div><!-- /content -->
+        <!-- Sidebar: lista de perguntas -->
+        <div id="aq-sidebar" style="width:260px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:8px 0;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:12px 16px 8px;">25 Perguntas</div>
+          <div id="aq-list"></div>
+        </div>
 
+        <!-- Main: player + legendas -->
+        <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;">
 
-</div><!-- /content -->
+          <!-- Pergunta atual -->
+          <div id="aq-q-box" style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px;">Pergunta</div>
+            <div id="aq-q-text" style="font-size:15px;font-weight:600;color:var(--text);line-height:1.5;"></div>
+            <div id="aq-q-pt" style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic;"></div>
+          </div>
+
+          <!-- Player -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:12px;">Player</div>
+
+            <!-- Upload area -->
+            <div id="aq-upload-area" style="text-align:center;padding:20px;border:2px dashed var(--border);border-radius:8px;margin-bottom:12px;cursor:pointer;" onclick="document.getElementById('aq-file-input').click()">
+              <div style="font-size:24px;margin-bottom:6px;">🎵</div>
+              <div style="font-size:13px;color:var(--text2);">Clique para subir o áudio desta resposta</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px;">MP3, WAV, M4A</div>
+              <input type="file" id="aq-file-input" accept="audio/*" style="display:none;" onchange="loadAudioFile(this)">
+            </div>
+
+            <!-- Audio element + controls -->
+            <audio id="aq-audio" style="display:none;" ontimeupdate="syncLegend()" onended="onAudioEnd()"></audio>
+
+            <div id="aq-controls" style="display:none;">
+              <!-- Progress bar -->
+              <div id="aq-progress-wrap" style="height:6px;background:var(--bg3);border-radius:3px;margin-bottom:12px;cursor:pointer;position:relative;" onclick="seekAudio(event)">
+                <div id="aq-progress-fill" style="height:100%;background:var(--accent);border-radius:3px;width:0%;transition:width .1s linear;"></div>
+              </div>
+              <!-- Time + buttons -->
+              <div style="display:flex;align-items:center;gap:10px;">
+                <button onclick="aqSkip(-10)" style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:12px;font-family:inherit;">-10s</button>
+                <button id="aq-play-btn" onclick="aqTogglePlay()" style="width:44px;height:44px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:18px;cursor:pointer;">▶</button>
+                <button onclick="aqSkip(10)" style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:12px;font-family:inherit;">+10s</button>
+                <span id="aq-time" style="font-size:12px;color:var(--text2);flex:1;">0:00 / 0:00</span>
+                <select id="aq-speed" onchange="setAqSpeed()" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-family:inherit;">
+                  <option value="0.7">0.7×</option>
+                  <option value="0.85">0.85×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="1.25">1.25×</option>
+                </select>
+              </div>
+              <div style="text-align:center;margin-top:10px;">
+                <button onclick="clearAudio()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;">trocar áudio</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legendas -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);">Legendas</div>
+              <div style="display:flex;gap:6px;">
+                <button class="flt on" id="leg-en-btn" onclick="toggleLegLang('en')">EN</button>
+                <button class="flt on" id="leg-pt-btn" onclick="toggleLegLang('pt')">PT</button>
+              </div>
+            </div>
+            <!-- Active legend display -->
+            <div id="aq-legend-active" style="min-height:80px;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+              <div id="aq-leg-en" style="font-size:20px;font-weight:600;color:var(--text);line-height:1.4;text-align:center;"></div>
+              <div id="aq-leg-pt" style="font-size:14px;color:var(--text2);text-align:center;font-style:italic;"></div>
+            </div>
+          </div>
+
+          <!-- Transcrição completa (colapsável) -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+            <button onclick="toggleTranscript()" style="width:100%;padding:14px 16px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:var(--text2);font-size:13px;">
+              <span>📄 Transcrição completa</span>
+              <span id="transcript-arrow">▼</span>
+            </button>
+            <div id="aq-transcript-body" style="display:none;padding:0 16px 16px;border-top:1px solid var(--border);">
+              <div style="font-size:12px;font-weight:600;color:var(--text3);margin:12px 0 6px;">INGLÊS</div>
+              <div id="aq-trans-en" style="font-size:13px;color:var(--text);line-height:1.7;"></div>
+              <div style="font-size:12px;font-weight:600;color:var(--text3);margin:12px 0 6px;">PORTUGUÊS</div>
+              <div id="aq-trans-pt" style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;"></div>
+            </div>
+          </div>
+
+        </div><!-- /main -->
+      </div><!-- /aq-layout -->
+    </div>
+
+  </div><!-- /body -->
+</div><!-- /app -->
 
 <script>
-// ══════════════════════════════════════════════════════════
-// DATA — v2 (completo, baseado no Q&A integral)
-// ══════════════════════════════════════════════════════════
-
-const INTERVIEW_DATE_1 = new Date('2026-07-01');
-
-// ─────────────────────────────────────────────────────────
-// PERGUNTAS — 25 perguntas cobrindo todo o Q&A
-// type: 'both' | 'br' | 'int'
-// ─────────────────────────────────────────────────────────
-const QUESTIONS = [
-
-  // ── BACKGROUND & MOTIVAÇÃO ──────────────────────────────
-  {
-    id: 1, cat: 'Background', type: 'both',
-    q: "Tell us about yourself.",
-    model: "I grew up on a <mark>farm in Minas Gerais</mark>. I studied agriculture at the <mark>Federal University of Viçosa</mark>. After that, I worked in leadership programs at <mark>Fundação Estudar</mark> — a nonprofit founded by the people behind 3G Capital. I co-founded <mark>Produtor Agro</mark>, an agribusiness marketplace. Today I lead <mark>Agrominas Fertilizantes</mark>, focused on natural fertilizers. I also grow <mark>coffee and oranges</mark> in Minas Gerais. These experiences led me to one question: how can we <mark>finance the transition to regenerative agriculture</mark>?",
-    keywords: ['farm','minas','agriculture','leadership','Estudar','Agrominas','regenerative','finance'],
-    tips: [
-      'Memorize essa como um bloco único — é a base de 40% das outras respostas.',
-      'Pause entre cada fase da sua vida: farm → university → Estudar → Produtor Agro → Agrominas → hoje.',
-      'Sempre termine com sua pergunta de pesquisa — conecta tudo.'
-    ],
-    followups: [
-      'What was it like growing up on a farm?',
-      'How did your time at Fundação Estudar influence your thinking?',
-      'Tell me more about Produtor Agro — what was the challenge?'
-    ]
-  },
-
-  {
-    id: 2, cat: 'Background', type: 'both',
-    q: "What are your main strengths?",
-    model: "My main strength is <mark>connecting people and ideas around a shared goal</mark>. One example: at Fundação Estudar, I helped build a technology scholarship program that increased the percentage of <mark>Brazilians at the world's top universities</mark>. I believe this ability to mobilize and connect will be one of my biggest contributions inside the Nuffield network.",
-    keywords: ['connect','people','ideas','Estudar','universities','mobilize','network'],
-    tips: [
-      'Dê sempre um exemplo concreto — não só o traço, mas a prova.',
-      'Vincule a força ao que você vai oferecer ao Nuffield.'
-    ],
-    followups: [
-      'And what about your weaknesses?',
-      'Can you give me another example of connecting people?'
-    ]
-  },
-
-  {
-    id: 3, cat: 'Background', type: 'both',
-    q: "What are your strengths and weaknesses?",
-    model: "My main strength is <mark>mobilizing people and connecting ideas</mark>. My weaknesses: my <mark>English proficiency</mark> still limits me — I am working on that actively. And I sometimes <mark>underestimate how difficult things can be</mark> — which I try to counter with disciplined planning and testing, like I learned at Produtor Agro.",
-    keywords: ['mobilizing','connecting','english','underestimate','planning','testing'],
-    tips: [
-      'Mencionar inglês como fraqueza aqui é honesto e esperado — não evite.',
-      'Mostre que você aprendeu algo com a segunda fraqueza — isso transforma o ponto fraco em amadurecimento.'
-    ],
-    followups: [
-      'How are you addressing the English limitation specifically?',
-      'Give me an example of underestimating something — what happened?'
-    ]
-  },
-
-  {
-    id: 4, cat: 'Background', type: 'both',
-    q: "What was the biggest professional challenge you've faced?",
-    model: "Doing <mark>online sales to rural producers in 2017</mark>, when platforms like Mercado Livre were still viewed with suspicion by farmers. At Produtor Agro, it took <mark>more than sixty tests</mark> before the first sales came through. We eventually pivoted to focus on <mark>university students in agricultural regions</mark> — the next generation of farm operators. That taught me the value of <mark>disciplined testing when pioneering something disruptive</mark>.",
-    keywords: ['online','rural','producers','sixty','tests','pivot','university','disciplined','testing'],
-    tips: [
-      'Número concreto (60 testes) torna a história memorável — use-o.',
-      'A lição final é o que eles querem ouvir: "disciplined testing when pioneering something disruptive."'
-    ],
-    followups: [
-      'How long did those 60 tests take?',
-      'Did you ever consider giving up?',
-      'What would you do differently today?'
-    ]
-  },
-
-  {
-    id: 5, cat: 'Background', type: 'both',
-    q: "Tell us about a time you failed.",
-    model: "I ran as a candidate for <mark>state representative</mark>, received over <mark>10,000 votes</mark>, and was not elected. The real failure was not losing — it was attempting something <mark>without first understanding the profile it required</mark>. I spent a few months working in Congress afterward, and confirmed that my real place is in <mark>civil society</mark>, not politics.",
-    keywords: ['candidate','representative','votes','failure','profile','civil','society'],
-    tips: [
-      'Essa história é genuinamente interessante — não se desculpe por ela.',
-      'O insight final — "my real place is in civil society" — é forte. Diga com convicção.'
-    ],
-    followups: [
-      'What specifically did you learn from that experience?',
-      'Has that changed how you make major decisions since?'
-    ]
-  },
-
-  {
-    id: 6, cat: 'Background', type: 'both',
-    q: "Tell us about a conflict with a colleague or stakeholder.",
-    model: "Brazil is a <mark>very polarized society</mark>. Being in agribusiness puts me on one end of the political spectrum; advocating for sustainability puts me on the other. This has created real conflicts. My approach: I <mark>listen to the other person's perspective first</mark>, then use <mark>data and evidence</mark> to show we often share more common ground than we think.",
-    keywords: ['polarized','agribusiness','sustainability','listen','data','evidence','common'],
-    tips: [
-      'Essa resposta mostra inteligência emocional e maturidade política — qualidades que o Nuffield valoriza muito.',
-      'A estrutura é: contexto → tensão → minha abordagem. Não pule para a solução sem mostrar o conflito.'
-    ],
-    followups: [
-      'Can you give a specific example of such a conflict?',
-      'How do you handle situations where data doesn\'t change the other person\'s mind?'
-    ]
-  },
-
-  {
-    id: 7, cat: 'Background', type: 'both',
-    q: "What values are non-negotiable for you?",
-    model: "<mark>Commitment</mark> — making a promise and not following through is something that genuinely weighs on me, whether with family, partners, or strangers. And <mark>integrity</mark> — I believe in long-term relationships, and without integrity that simply isn't possible.",
-    keywords: ['commitment','promise','integrity','long-term','relationships'],
-    tips: [
-      'Resposta curta e direta. Não precisa de exemplos aqui — a clareza já impressiona.',
-      'Comprometimento e integridade são exatamente os valores do Nuffield. Essa resposta ressoa.'
-    ],
-    followups: [
-      'Give me an example of a time you had to choose integrity over convenience.',
-      'How do you handle it when others around you don\'t share these values?'
-    ]
-  },
-
-  {
-    id: 8, cat: 'Background', type: 'both',
-    q: "Describe a time you contributed to a community without compensation.",
-    model: "I have been a <mark>teacher at a community college-prep school</mark>, a volunteer at Fundação Estudar, and at <mark>Instituto Four</mark>. Throughout my life many people have opened doors for me. I believe that continuing to <mark>open doors for others</mark> is a way of multiplying that forward — paying it forward, as they say.",
-    keywords: ['teacher','volunteer','Estudar','doors','community','paying','forward'],
-    tips: [
-      'Frase final — "paying it forward" — é conhecida e poderosa em inglês. Memorize.',
-      'Três exemplos concretos em uma frase só. Não precisa desenvolver cada um.'
-    ],
-    followups: [
-      'Why Instituto Four specifically?',
-      'Do you still do any of these activities today?'
-    ]
-  },
-
-  // ── MOTIVAÇÃO NUFFIELD ───────────────────────────────────
-  {
-    id: 9, cat: 'Nuffield', type: 'both',
-    q: "Why do you want to join Nuffield? How can it contribute to you, and how can you contribute to it?",
-    model: "I heard about Nuffield a few years ago and was drawn by two things: the <mark>flexibility it gives scholars</mark> to shape their own agenda, and the quality of the network. My company has <mark>sponsored two scholars</mark>, which gave me an even more positive view. What I lack today are <mark>global references at a personal level</mark> — people I can actually talk to, not just read reports from. I want to be the <mark>connector</mark> who brings those international experiences back to Brazil.",
-    keywords: ['flexibility','scholars','sponsored','global','personal','connector','Brazil','network'],
-    tips: [
-      'Detalhe sobre sponsor é ouro — você conhece o programa de dentro, não só de fora.',
-      'A frase "people I can actually talk to, not just read reports from" é memorável. Use-a.'
-    ],
-    followups: [
-      'Do you know any current or past Nuffield scholars personally?',
-      'What specifically do you hope to learn that you cannot learn from reports?'
-    ]
-  },
-
-  {
-    id: 10, cat: 'Nuffield', type: 'both',
-    q: "Why should Nuffield choose you?",
-    model: "I combine three things that are rarely found together: I am a <mark>rural producer</mark>, an <mark>entrepreneur</mark>, and an <mark>executive with a leadership development background</mark>. That intersection gives me a profile that can contribute different perspectives to different audiences inside the network. And with my connections in Brazil, I can also <mark>connect Nuffield to organizations and people</mark> not yet part of the network.",
-    keywords: ['producer','entrepreneur','executive','leadership','perspectives','connect','organizations','network'],
-    tips: [
-      'Não seja modesto. Essa pergunta pede que você venda seu perfil com clareza.',
-      'A combinação producer + entrepreneur + leadership background é genuinamente rara.'
-    ],
-    followups: [
-      'What makes your profile different from other Brazilian candidates?',
-      'How would you contribute beyond the research report itself?'
-    ]
-  },
-
-  {
-    id: 11, cat: 'Nuffield', type: 'both',
-    q: "Why do this program now, rather than later?",
-    model: "Because I <mark>wake up and go to sleep thinking about it</mark>. I believe this is a <mark>pivotal moment for Brazil to lead</mark> on regenerative agriculture — and that waiting would mean missing the window. I also considered improving my English first, but I believe my <mark>drive to develop this topic</mark> will be the strongest motivator to keep improving my English. And the Nuffield structure — autonomy, network, global exposure — is <mark>exactly the kind of amplifier</mark> my profile needs.",
-    keywords: ['pivotal','moment','Brazil','lead','drive','topic','English','autonomy','amplifier'],
-    tips: [
-      'A frase "wake up and go to sleep thinking about it" é pessoal e autêntica — diga com emoção.',
-      'Tocar no inglês aqui mostra que você pensa no problema honestamente, não defensivamente.'
-    ],
-    followups: [
-      'What would you do if you were not accepted this year?',
-      'Is there a specific event or deadline driving the timing?'
-    ]
-  },
-
-  {
-    id: 12, cat: 'Nuffield', type: 'both',
-    q: "If you're not accepted this year, will you apply again?",
-    model: "Right now all my plans are built around this research project. If I'm not accepted, I'll find other ways to pursue the goal — but I'm not sure I'll have the same <mark>time and priorities</mark> in future years. I will certainly stay close to the network — <mark>if not as a scholar, then as a partner</mark>, which I already am.",
-    keywords: ['plans','research','pursue','time','priorities','partner','network','scholar'],
-    tips: [
-      'Resposta honesta e sem drama. Não prometa que vai tentar de novo — mostra que você é focado neste ciclo.',
-      'Terminar com "already a partner" reforça que seu vínculo com o Nuffield é real.'
-    ],
-    followups: []
-  },
-
-  {
-    id: 13, cat: 'Nuffield', type: 'both',
-    q: "How do you plan to fund your participation? Would Agrominas be a sponsor?",
-    model: "My plan is to seek sponsors from organizations <mark>aligned with the financing topic</mark> — banks with agribusiness portfolios, buyers with regenerative initiatives, and third-sector organizations. I've already mapped the <mark>key decision-makers</mark> at each one. For Agrominas, my plan is to ask for a <mark>paid leave of absence</mark> during the travel periods — not sponsorship — so there's no conflict of interest.",
-    keywords: ['sponsors','aligned','banks','buyers','decision-makers','paid','leave','Agrominas'],
-    tips: [
-      'O detalhe do "paid leave" em vez de sponsorship da própria empresa é sofisticado — mostra que você pensou na independência da pesquisa.',
-      'Mencione 2-3 nomes concretos se conseguir pronunciar: Rabobank, Itaú, Nestlé, Nespresso.'
-    ],
-    followups: [
-      'What do you offer sponsors in return beyond the fiscal benefit?',
-      'How confident are you that you will find funding?',
-      'What is your timeline for approaching sponsors?'
-    ]
-  },
-
-  {
-    id: 14, cat: 'Nuffield', type: 'both',
-    q: "How do you plan to organize yourself for the 12 weeks away?",
-    model: "Agrominas already knows Nuffield — we've been <mark>sponsors for two years</mark>, so they're excited. I've let them know I'll seek other sponsors and will need <mark>schedule flexibility</mark>. On the family side, my wife and I already have experience with extended time apart — she spent a <mark>month at Harvard</mark>, I spent a month in Canada. We manage well.",
-    keywords: ['sponsors','flexibility','family','wife','Harvard','Canada','manage'],
-    tips: [
-      'O exemplo da Harvard e Canadá é concreto e mostra que isso não é teórico para a sua família.',
-      'Resposta curta é suficiente aqui — mostra que você já organizou tudo na cabeça.'
-    ],
-    followups: [
-      'Do you have children? How would you handle that?',
-      'What if a trip coincides with a critical period at work?'
-    ]
-  },
-
-  {
-    id: 15, cat: 'Inglês', type: 'both',
-    q: "How would you assess your current English level for the program?",
-    model: "If the trips were <mark>starting next month, I would not apply</mark> — I understand I couldn't make the most of it. But I have <mark>six months before Zimbabwe</mark>, and I have a concrete study plan I built together with English teachers. I've already been studying since I decided to apply. My core value is <mark>commitment</mark> — and I am committed to being ready.",
-    keywords: ['next','month','six','months','Zimbabwe','plan','teachers','commitment','ready'],
-    tips: [
-      'Essa resposta é perfeita porque é honesta e confiante ao mesmo tempo.',
-      'Diga "Zimbabwe" com confiança — é o nome do destino real, eles sabem que você pesquisou.',
-      'Não minimize o problema nem exagere a solução — o equilíbrio é o que convence.'
-    ],
-    followups: [
-      'What exactly does your study plan look like?',
-      'What happens if your English is still not sufficient when you arrive in Zimbabwe?'
-    ]
-  },
-
-  {
-    id: 16, cat: 'Inglês', type: 'both',
-    q: "What happens if you arrive in Zimbabwe and realize your English still isn't enough?",
-    model: "I've been studying since I decided to apply, and I built this plan <mark>together with English teachers</mark> — so I'm confident in it. But if I get there and it's not sufficient, I will <mark>intensify my study load</mark>. Commitment to my agreements is a core value. I won't arrive unprepared — that would be failing before I even start.",
-    keywords: ['studying','teachers','confident','intensify','commitment','agreements','prepared'],
-    tips: [
-      'Não panique com essa pergunta — ela testa sua resiliência, não seu inglês.',
-      'A frase final — "failing before I even start" — é forte e mostra que você leva isso a sério.'
-    ],
-    followups: [
-      'Have you studied English formally before?',
-      'Do you have a teacher right now?'
-    ]
-  },
-
-  {
-    id: 17, cat: 'Nuffield', type: 'int',
-    q: "The Global Focus Program places you with scholars from different countries and topics. How will you contribute to the group?",
-    model: "I think any <mark>Brazilian already adds value</mark> to a global group — given the scale of agriculture in our country. But beyond that, my experience at the intersection of <mark>leadership, technology, and farming</mark> gives me perspectives that are genuinely different from most. I'm also comfortable building bridges across very different worldviews — that's something I do in Brazil every day, navigating a polarized society.",
-    keywords: ['Brazilian','value','scale','leadership','technology','farming','perspectives','bridges'],
-    tips: [
-      'Mencionar o Brasil como ativo estratégico é sempre bem recebido em contexto internacional — o país é gigante no agro global.',
-      'A referência à polarização brasileira conecta sua vivência à habilidade de navegar diversidade — sofisticado.'
-    ],
-    followups: [
-      'Give me a concrete example of how you would contribute in a group discussion.',
-      'What do you think you will struggle with most in the GFP?'
-    ]
-  },
-
-  // ── TEMA DE PESQUISA ────────────────────────────────────
-  {
-    id: 18, cat: 'Pesquisa', type: 'both',
-    q: "What is regenerative agriculture?",
-    model: "It's a production model that <mark>looks at the farm as a whole system</mark>. It addresses the physical, chemical, and biological dimensions together — not just yield. The result: it can <mark>produce food and regenerate soils and ecosystems</mark> at the same time, while building greater resilience to climate shocks.",
-    keywords: ['system','physical','chemical','biological','food','regenerate','soils','resilience','climate'],
-    tips: [
-      'Definição técnica curta — não precisa ser longa. O que importa é a palavra "system".',
-      'A diferença do convencional: convencional maximiza yield. Regenerativo maximiza o sistema inteiro.'
-    ],
-    followups: [
-      'How is regenerative different from organic?',
-      'Are there scientific consensus studies supporting this?'
-    ]
-  },
-
-  {
-    id: 19, cat: 'Pesquisa', type: 'both',
-    q: "What is your research topic and why did this interest develop?",
-    model: "My research question: <mark>what are the best financial structures to fund the transition to regenerative agriculture?</mark> I grew up watching <mark>profit margins shrink and extreme weather cause losses</mark>. When I found regenerative agriculture, I saw the solution — but also the problem: it requires <mark>more investment in the short term</mark>, even as it pays off in the medium term. That gap — between what we know works and what producers can actually fund — is what I want to close.",
-    keywords: ['financial','structures','transition','regenerative','margins','weather','investment','short','gap','producers'],
-    tips: [
-      'Essa é a resposta mais importante do tema. A estrutura é: problema vivido → solução encontrada → novo problema (o gap) → sua pergunta.',
-      'BCG e Bain: "costs increase and yields decline in the first years" — cite se conseguir.'
-    ],
-    followups: [
-      'Have you personally experienced losses from climate events on your farm?',
-      'When did you first discover regenerative agriculture?',
-      'How long have you been working in natural fertilizers?'
-    ]
-  },
-
-  {
-    id: 20, cat: 'Pesquisa', type: 'both',
-    q: "It seems like you already have the answers. Why is the program still relevant?",
-    model: "I've studied the topic and know the possible paths. But knowing the theory is different from understanding how solutions <mark>reach producers in their daily reality</mark>. What financing actually delivers impact? Which approaches are <mark>replicable in Brazil</mark>? Those answers require being there, talking to the people <mark>actually living the transition</mark> — not reading about it.",
-    keywords: ['theory','producers','daily','reality','impact','replicable','Brazil','talking','living','transition'],
-    tips: [
-      'Não discorde da premissa — aceite-a e vá além. "Yes, I know the paths. But knowing is different from understanding."',
-      'Essa resposta testa se você pensa com humildade intelectual — uma qualidade Nuffield valoriza muito.'
-    ],
-    followups: [
-      'What is the one thing you most want to understand better?',
-      'What would change your mind about your current hypotheses?'
-    ]
-  },
-
-  {
-    id: 21, cat: 'Pesquisa', type: 'both',
-    q: "Why is regenerative agriculture difficult to scale?",
-    model: "When you farm in an integrated way, you work across <mark>more processes at once</mark> — many out of balance under current practices — and there are no standardized tools or techniques as in conventional farming. In the <mark>first years of transition, costs go up and yields go down</mark> — BCG and Bain have documented this. Without financing, the transition is simply <mark>unviable for most producers</mark>.",
-    keywords: ['integrated','processes','conventional','costs','yields','BCG','Bain','financing','unviable','producers'],
-    tips: [
-      'Citar BCG e Bain é poderoso — mostra que você conhece a literatura.',
-      'A frase final — "unviable for most producers" — é o gancho direto para sua pergunta de pesquisa.'
-    ],
-    followups: [
-      'Is it mainly a knowledge problem or a financial problem?',
-      'Are there examples where it scaled successfully?',
-      'What role does technology play?'
-    ]
-  },
-
-  {
-    id: 22, cat: 'Pesquisa', type: 'int',
-    q: "Of banks, buyers, and government — which actor has the most power to move the needle?",
-    model: "Just like regenerative agriculture itself, you have to <mark>look at the whole system</mark>. You need <mark>catalytic capital</mark> from government and nonprofits to de-risk the transition. You need banks that <mark>price the lower risk</mark> of resilient farms into better interest rates. And you need buyers <mark>willing to pay a premium</mark>. Financing the transition only happens through <mark>systemic action</mark> — all three together.",
-    keywords: ['system','catalytic','capital','government','banks','risk','interest','buyers','premium','systemic'],
-    tips: [
-      'Resposta "todos os três juntos" é a correta e a mais sofisticada — não tente escolher um.',
-      'Ordem lógica: catalytic capital (governo) → risk pricing (bancos) → premium (compradores). Essa sequência conta uma história.'
-    ],
-    followups: [
-      'If you had to start with just one actor, which would you choose?',
-      'Are there examples of this systemic approach working somewhere in the world?'
-    ]
-  },
-
-  {
-    id: 23, cat: 'Pesquisa', type: 'int',
-    q: "What does your research bring that's new compared to existing literature?",
-    model: "The literature already shows sustainable production is <mark>viable in the medium term</mark>. What's missing is closing the <mark>financial gap during the transition period itself</mark>. I'm focused on that specific pain point. And I want to focus not just on solutions that exist in theory, but on those that are <mark>actually reaching producers</mark> and becoming real cases — ones that are <mark>more easily replicable in Brazil</mark>.",
-    keywords: ['viable','medium','gap','transition','pain','theory','reaching','producers','replicable','Brazil'],
-    tips: [
-      'Posicione-se como específico onde outros foram amplos. "The literature shows it works. I want to know how to fund it."',
-      '"Replicable in Brazil" é a âncora local — conecta a pesquisa global ao impacto real em casa.'
-    ],
-    followups: [
-      'What existing Nuffield reports cover this area?',
-      'What is your hypothesis about which financing structure works best?'
-    ]
-  },
-
-  {
-    id: 24, cat: 'Pesquisa', type: 'int',
-    q: "Which countries will you visit for your individual research and why?",
-    model: "Four regions. <mark>United States</mark>: Rodale Institute in Pennsylvania — the longest-running comparative trial of regenerative vs conventional. Iowa and Kansas for extension programs and funded transition models. <mark>Europe</mark>: Netherlands, France, and UK for public policies that tie credit access to regenerative practices. <mark>Australia</mark>: carbon credit-based financing, where banks already accept carbon contracts as collateral. <mark>India</mark>: a developing country with scaling challenges similar to Brazil, with pilots of the Societal Thinking methodology.",
-    keywords: ['Rodale','Pennsylvania','Iowa','Europe','Netherlands','France','Australia','carbon','India','scaling'],
-    tips: [
-      'Não tente citar todos os lugares — escolha um ponto forte por região e explique o "por quê".',
-      'Australia é o mais interessante para a banca internacional: carbon credits como colateral bancário é inovador.',
-      'India como comparador ao Brasil é um argumento inteligente — países em desenvolvimento com desafios similares.'
-    ],
-    followups: [
-      'Why not South America — Argentina or Chile?',
-      'What specific organizations will you visit in Australia?',
-      'How will you get access to these institutions?'
-    ]
-  },
-
-  {
-    id: 25, cat: 'Pesquisa', type: 'int',
-    q: "How do you ensure your final report doesn't just gather dust?",
-    model: "The report alone is not enough. Each organization needs to understand not just <mark>what to do and how to do it</mark>, but <mark>why it is advantageous for them</mark>. Senior decision-makers need to see what they gain from a more resilient agriculture system. That framing — the business case for each actor — should be a <mark>central element of every output</mark>, not just an appendix.",
-    keywords: ['organization','what','how','why','advantageous','decision-makers','resilient','business','case','output'],
-    tips: [
-      '"Why advantageous for them" — não para o sistema, mas para cada ator individual. Isso é pensamento estratégico de comunicação.',
-      'Essa resposta mostra que você pensa em implementação, não só em pesquisa. Os avaliadores percebem.'
-    ],
-    followups: [
-      'What format do you imagine for your outputs beyond the written report?',
-      'Have you already identified which organizations would be the primary audience in Brazil?'
-    ]
-  }
-];
-
-// ─────────────────────────────────────────────────────────
-// BLOCOS — 7 categorias, 45 blocos no total
-// ─────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
 const BLOCOS = [
 
   // ── BLOCOS ORIGINAIS ────────────────────────────────────
@@ -864,10 +540,6 @@ const BLOCOS = [
     { en: "Government de-risks. / Banks price it. / Buyers pay for it. / All three together.", pt: "Governo reduz o risco. / Bancos precificam. / Compradores pagam. / Os três juntos.", note: "Os três atores em 4 chunks. Cada um é uma peça do sistema." }
   ]}
 ];
-
-// ─────────────────────────────────────────────────────────
-// LIFELINES — 16 frases do Q&A + extras essenciais
-// ─────────────────────────────────────────────────────────
 const LIFELINES = [
   { situation: 'Abrir a entrevista — diga isso primeiro', color: '#1a2a4d', borderColor: '#4f7fff', textColor: '#b4c4ff',
     phrase: "My English is still improving, but I'll do my best. I may not express myself perfectly, but I know this topic very well.",
@@ -918,10 +590,6 @@ const LIFELINES = [
     phrase: "I may not express myself perfectly in English, but I know this topic very well.",
     pt: "Talvez não me expresse perfeitamente em inglês, mas conheço muito bem esse tema." }
 ];
-
-// ─────────────────────────────────────────────────────────
-// PROMPTS DO CRONÔMETRO — 20 temas do seu contexto
-// ─────────────────────────────────────────────────────────
 const CT_PROMPTS = [
   "Talk about your childhood on the farm and how it shaped your vision for agriculture.",
   "Explain what regenerative agriculture means and why it matters for food security.",
@@ -944,10 +612,6 @@ const CT_PROMPTS = [
   "Talk about how you plan to ensure your Nuffield report has real impact, not just sit on a shelf.",
   "Describe the conflict between being in agribusiness and advocating for sustainability in Brazil."
 ];
-
-// ─────────────────────────────────────────────────────────
-// VOCABULÁRIO — 35 itens críticos
-// ─────────────────────────────────────────────────────────
 const VOCAB_ITEMS = [
   { en: "regenerative agriculture", pt: "agricultura regenerativa", pron: "re-DJEN-er-uh-tiv ag-ri-KAL-chur", cat: "Tema" },
   { en: "blended finance", pt: "financiamento misto / blended finance", pron: "BLEN-did FAI-nans", cat: "Tema" },
@@ -985,569 +649,1043 @@ const VOCAB_ITEMS = [
   { en: "collateral", pt: "garantia / colateral", pron: "kuh-LAT-er-ul", cat: "Países" },
   { en: "extension programs", pt: "programas de extensão rural", pron: "eks-TEN-shun", cat: "Países" }
 ];
-// STATE & STORAGE
-// ══════════════════════════════════════════════════════════
-const STORE_KEY = 'nuffield_coach';
-let state = {
-  vocabProgress: {}, // word -> {mastered, reps}
-  ctHistory: [],     // [{date, prompt, duration, completed}]
-  simHistory: [],    // [{date, qId, timeSpent, keywordsFound}]
-  todaySeconds: 0,
-  lastDate: ''
-};
 
-function loadState() {
-  try { const s = localStorage.getItem(STORE_KEY); if (s) state = JSON.parse(s); } catch(e) {}
-  const today = new Date().toISOString().split('T')[0];
-  if (state.lastDate !== today) { state.todaySeconds = 0; state.lastDate = today; }
+// ══════════════════════════════════════════════
+// BLOCOS — agrupamento por seção
+// ══════════════════════════════════════════════
+const BL_SECTIONS = [
+  {
+    label: '📋 Conteúdo base',
+    cats: [0,1,2,3,4,5,6]   // índices no array BLOCOS
+  },
+  {
+    label: '🎭 Chapéu 1 — Ator de dublagem',
+    sub: 'Ritmo, imagem e impacto emocional',
+    cats: [7,8,9]
+  },
+  {
+    label: '🎭 Chapéu 2 — Coach executivo',
+    sub: 'Estrutura de resposta e autoridade',
+    cats: [10,11,12]
+  },
+  {
+    label: '🎭 Chapéu 3 — Intérprete consecutivo',
+    sub: 'Listening estratégico',
+    cats: [13,14]
+  }
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+// Microphone/audio input disabled — app is text and TTS only
+window.SpeechRecognition = null;
+window.webkitSpeechRecognition = null;
+
+const SK = 'nuffield_coach_v3';
+let S = { vocab:{}, ctHist:[], todaySec:0, lastDate:'', practiced:{}, activeDays:[], aqStudied:{} };
+let activeCat = 0, blMode = 'read';
+let ctDur = 30, ctPromptText = '', ctInterval = null, ctElapsed = 0, ctRec = null, ctGoing = false;
+let vcFilter = 'Todos';
+
+function loadS() {
+  try { const s = localStorage.getItem(SK); if (s) S = JSON.parse(s); } catch(e) {}
+  if (!S.practiced) S.practiced = {};
+  if (!S.activeDays) S.activeDays = [];
+  if (!S.aqStudied) S.aqStudied = {};
+  const today = new Date().toISOString().slice(0,10);
+  if (S.lastDate !== today) { S.todaySec = 0; S.lastDate = today; }
+  // Mark today active if studied >60s
+  if (S.todaySec > 60 && !S.activeDays.includes(today)) {
+    S.activeDays.push(today); S.activeDays = S.activeDays.slice(-60);
+  }
 }
-function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {} }
+function calcStreak() {
+  const days = S.activeDays.slice().sort().reverse();
+  if (!days.length) return 0;
+  let streak = 0, d = new Date();
+  for (let i = 0; i < 60; i++) {
+    const ds = d.toISOString().slice(0,10);
+    if (days.includes(ds)) { streak++; d.setDate(d.getDate()-1); }
+    else if (i === 0) { d.setDate(d.getDate()-1); } // allow today not yet counted
+    else break;
+  }
+  return streak;
+}
+function updateStreak() {
+  const today = new Date().toISOString().slice(0,10);
+  if (S.todaySec > 60 && !S.activeDays.includes(today)) {
+    S.activeDays.push(today); S.activeDays = S.activeDays.slice(-60);
+  }
+  document.getElementById('streak-count').textContent = calcStreak();
+}
+function saveS() { try { localStorage.setItem(SK, JSON.stringify(S)); } catch(e) {} }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // TIME TRACKER
-// ══════════════════════════════════════════════════════════
-let lastTick = Date.now();
-let trackActive = false;
+// ══════════════════════════════════════════════
+let lastTick = Date.now(), tracking = false;
+let tickCount = 0;
 function tick() {
-  const now = Date.now();
-  const diff = (now - lastTick) / 1000;
+  const now = Date.now(), diff = (now - lastTick)/1000;
   lastTick = now;
-  if (trackActive && diff < 5) { state.todaySeconds += diff; }
-  updateTimeDisplay();
+  if (tracking && diff < 5) {
+    S.todaySec += diff; updateHdrTime();
+    tickCount++;
+    if (tickCount % 60 === 0) updateStreak(); // check streak every 60s
+  }
 }
-function startTracking() { trackActive = true; lastTick = Date.now(); }
-function stopTracking() { trackActive = false; }
-document.addEventListener('visibilitychange', () => { if (document.hidden) stopTracking(); else { startTracking(); lastTick = Date.now(); }});
+function updateHdrTime() {
+  document.getElementById('today-min').textContent = Math.floor(S.todaySec/60) + 'min';
+}
+document.addEventListener('visibilitychange', () => {
+  tracking = !document.hidden; lastTick = Date.now();
+});
 ['click','keydown','touchstart'].forEach(e => document.addEventListener(e, () => { lastTick = Date.now(); }));
 setInterval(tick, 1000);
-setInterval(saveState, 5000);
+setInterval(saveS, 4000);
 
-function updateTimeDisplay() {
-  const m = Math.floor(state.todaySeconds / 60);
-  document.getElementById('today-time').textContent = m + 'min';
+// ══════════════════════════════════════════════
+// HEADER
+// ══════════════════════════════════════════════
+function updateDays() {
+  const diff = Math.ceil((new Date('2026-07-01') - new Date()) / 86400000);
+  document.getElementById('days-left').textContent = diff > 0 ? diff : '🎯';
 }
 
-// DAYS COUNTDOWN
-function updateDaysDisplay() {
-  const now = new Date();
-  const diff = Math.ceil((INTERVIEW_DATE_1 - now) / 86400000);
-  document.getElementById('days-to-go').textContent = diff > 0 ? diff : '🎯';
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function goTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('p-' + id).classList.add('on');
+  if (id === 'audios') buildAQList(); // refresh studied badges
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // SPEECH
-// ══════════════════════════════════════════════════════════
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));
-  u.lang = 'en-US'; u.rate = 0.88; u.pitch = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const en = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
-          || voices.find(v => v.lang.startsWith('en-US'))
-          || voices.find(v => v.lang.startsWith('en'));
-  if (en) u.voice = en;
-  window.speechSynthesis.speak(u);
-}
-
-let recognition = null;
-let recognizing = false;
-function initRecognition(onResult, onEnd) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { alert('Use Chrome para reconhecimento de voz.'); return null; }
-  const r = new SR();
-  r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
-  r.onresult = onResult; r.onend = onEnd;
-  r.onerror = (e) => { recognizing = false; console.warn('SR error', e.error); };
-  return r;
-}
-
-function normalizeText(s) {
-  return s.toLowerCase().replace(/<[^>]+>/g,'').replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
-}
-
-function scoreKeywords(transcript, keywords) {
-  const t = normalizeText(transcript);
-  return keywords.map(kw => ({ kw, found: t.includes(normalizeText(kw)) }));
-}
-
-// ══════════════════════════════════════════════════════════
-// TAB SWITCHING
-// ══════════════════════════════════════════════════════════
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const activeTab = [...document.querySelectorAll('.tab')].find(t => t.getAttribute('onclick').includes("'" + tab + "'"));
-  if (activeTab) activeTab.classList.add('active');
-  document.getElementById('panel-' + tab).classList.add('active');
-  if (tab === 'vocab') renderVocab();
-  if (tab === 'blocos') renderBlocos();
-  if (tab === 'lifelines') renderLifelines();
-}
-
-// ══════════════════════════════════════════════════════════
-// BLOCOS
-// ══════════════════════════════════════════════════════════
-function renderBlocos() {
-  const container = document.getElementById('blocos-categories');
-  if (!container) return;
-  container.innerHTML = '';
-
-  // Dividers by category INDEX (robust — no emoji string matching)
-  const dividers = {
-    7: { label: '🎭 Chapéu 1 — Ator de dublagem', sub: 'Ritmo, imagem e impacto emocional. Memorize como linhas de personagem — não como informação.' },
-    10: { label: '🎭 Chapéu 2 — Coach executivo', sub: 'Estrutura de resposta e autoridade com língua imperfeita.' },
-    13: { label: '🎭 Chapéu 3 — Intérprete consecutivo', sub: 'Listening estratégico: reconheça a palavra-gatilho, ative o bloco certo.' },
-  };
-
-  BLOCOS.forEach(function(cat, ci) {
-    // Insert professional divider before this category if applicable
-    if (dividers[ci]) {
-      var div = document.createElement('div');
-      div.style.cssText = 'margin:28px 0 14px;padding:12px 16px;background:#1e2330;border-left:3px solid #4f7fff;border-radius:0 10px 10px 0;';
-      div.innerHTML = '<div style="font-size:14px;font-weight:700;color:#4f7fff;margin-bottom:3px;">' + dividers[ci].label + '</div>'
-                    + '<div style="font-size:12px;color:#8892a4;">' + dividers[ci].sub + '</div>';
-      container.appendChild(div);
-    }
-
-    var sec = document.createElement('div');
-    var title = document.createElement('div');
-    title.className = 'section-title';
-    title.style.marginTop = '14px';
-    title.innerHTML = escHtml(cat.cat) + ' <span style="font-weight:400;color:#525d72">(' + cat.items.length + ')</span>';
-    sec.appendChild(title);
-
-    cat.items.forEach(function(item, i) {
-      var safeEn = item.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      var card = document.createElement('div');
-      card.className = 'bloco-card';
-
-      var html = '<div class="bloco-en">' + escHtml(item.en) + '</div>'
-               + '<div class="bloco-pt">' + escHtml(item.pt) + '</div>';
-      if (item.note) {
-        html += '<div style="font-size:11px;color:#ffa94d;margin-top:6px;padding-top:6px;border-top:1px solid #2a3145;">💡 ' + escHtml(item.note) + '</div>';
-      }
-      html += '<div class="bloco-controls">'
-            + '<button class="btn btn-ghost btn-sm" onclick="speak(\'' + safeEn + '\')">🔊 Ouvir</button>'
-            + '<button class="btn btn-ghost btn-sm" onclick="speakSlow(\'' + safeEn + '\')">🐢 Devagar</button>'
-            + '</div>';
-      card.innerHTML = html;
-      sec.appendChild(card);
-    });
-    container.appendChild(sec);
-  });
-}
-
-function escHtml(s) {
-  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function speakSlow(text) {
+// ══════════════════════════════════════════════
+function speak(text, rate) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US'; u.rate = 0.65;
+  u.lang = 'en-US'; u.rate = rate || 0.88;
+  const vs = window.speechSynthesis.getVoices();
+  const v = vs.find(v => v.lang.startsWith('en-US')) || vs.find(v => v.lang.startsWith('en'));
+  if (v) u.voice = v;
   window.speechSynthesis.speak(u);
 }
 
-// ══════════════════════════════════════════════════════════
-// LIFELINES
-// ══════════════════════════════════════════════════════════
-function renderLifelines() {
-  const container = document.getElementById('lifelines-list');
-  container.innerHTML = '';
-  LIFELINES.forEach((ll, i) => {
-    const card = document.createElement('div');
-    card.className = 'lifeline-card';
-    card.style.cssText = `background:${ll.color};border-color:${ll.borderColor}`;
-    card.innerHTML = `
-      <div class="lifeline-situation" style="color:${ll.borderColor}">${ll.situation}</div>
-      <div class="lifeline-phrase" style="color:${ll.textColor}">"${ll.phrase}"</div>
-      <div class="lifeline-pt" style="color:${ll.textColor}">${ll.pt}</div>
-      <div class="flex gap8">
-        <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:${ll.textColor};border:1px solid rgba(255,255,255,0.2);" onclick="speak('${ll.phrase.replace(/'/g,"\\'")}')">🔊 Ouvir</button>
-        <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:${ll.textColor};border:1px solid rgba(255,255,255,0.2);" onclick="speakSlow('${ll.phrase.replace(/'/g,"\\'")}')">🐢 Devagar</button>
-      </div>
-    `;
-    container.appendChild(card);
+// ══════════════════════════════════════════════
+// BLOCOS
+// ══════════════════════════════════════════════
+function setBlMode(mode, el) {
+  blMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderItems(activeCat);
+}
+
+function buildSidebar() {
+  const sb = document.getElementById('bl-sidebar');
+  const sel = document.getElementById('bl-mobile-sel');
+  sb.innerHTML = ''; sel.innerHTML = '';
+
+  BL_SECTIONS.forEach(sec => {
+    // Section label
+    const lbl = document.createElement('div');
+    lbl.className = 'bl-section-label';
+    lbl.textContent = sec.label;
+    sb.appendChild(lbl);
+
+    if (sec.sub) {
+      const sub = document.createElement('div');
+      sub.style.cssText = 'font-size:11px;color:var(--text3);padding:0 16px 8px;line-height:1.4;';
+      sub.textContent = sec.sub;
+      sb.appendChild(sub);
+    }
+
+    sec.cats.forEach(ci => {
+      const cat = BLOCOS[ci];
+      // Sidebar button
+      const btn = document.createElement('div');
+      btn.className = 'bl-cat' + (ci === activeCat ? ' on' : '');
+      btn.id = 'blcat-' + ci;
+      btn.innerHTML = escH(cat.cat) + '<span class="count">' + cat.items.length + '</span>';
+      btn.onclick = () => selectCat(ci);
+      sb.appendChild(btn);
+
+      // Mobile select option
+      const opt = document.createElement('option');
+      opt.value = ci;
+      opt.textContent = cat.cat;
+      if (ci === activeCat) opt.selected = true;
+      sel.appendChild(opt);
+    });
   });
 }
 
-// ══════════════════════════════════════════════════════════
-// SIMULADOR
-// ══════════════════════════════════════════════════════════
-let simType = 'br';
-let simQueue = [];
-let simIndex = 0;
-let simTimerInterval = null;
-let simElapsed = 0;
-let simTranscript = '';
-let simRec = null;
-let simRecognizing = false;
-
-function selectSimType(t, el) {
-  simType = t;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+function selectCat(ci) {
+  activeCat = ci;
+  // Update sidebar highlight
+  document.querySelectorAll('.bl-cat').forEach(b => b.classList.remove('on'));
+  const btn = document.getElementById('blcat-' + ci);
+  if (btn) { btn.classList.add('on'); btn.scrollIntoView({block:'nearest'}); }
+  // Update mobile select
+  document.getElementById('bl-mobile-sel').value = ci;
+  renderItems(ci);
 }
 
-function startSimulator() {
-  let pool = QUESTIONS.filter(q => simType === 'both' || q.type === simType || q.type === 'both');
-  // Shuffle
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  simQueue = pool.slice(0, simType === 'br' ? 6 : 8);
-  simIndex = 0;
-  document.getElementById('sim-start').classList.add('hidden');
-  document.getElementById('sim-result').classList.add('hidden');
-  document.getElementById('sim-session').classList.remove('hidden');
-  loadSimQuestion();
-}
+function renderItems(ci) {
+  const cat = BLOCOS[ci];
+  const container = document.getElementById('bl-items');
+  let secInfo = null;
+  BL_SECTIONS.forEach(s => { if (s.cats.includes(ci) && s.sub) secInfo = s; });
 
-function loadSimQuestion() {
-  if (simIndex >= simQueue.length) { showSimResult(); return; }
-  const q = simQueue[simIndex];
-  document.getElementById('sim-q-badge').textContent = `Q${simIndex+1}/${simQueue.length}`;
-  document.getElementById('sim-q-cat').textContent = q.cat;
-  document.getElementById('sim-q-text').textContent = q.q;
-  document.getElementById('sim-q-tag').textContent = '';
-  // Model answer
-  document.getElementById('sim-model').innerHTML = q.model;
-  document.getElementById('sim-model').classList.add('hidden');
-  const tipsList = document.getElementById('sim-tips');
-  tipsList.innerHTML = q.tips.map(t => `<li>${t}</li>`).join('');
-  tipsList.classList.add('hidden');
-  document.querySelector('#sim-model-wrap button').style.display = '';
-  // Follow-ups
-  const fu = document.getElementById('sim-followups');
-  fu.innerHTML = q.followups.map(f => `<button class="followup-btn" onclick="speak('${f.replace(/'/g,"\\'")}')">🔊 ${f}</button>`).join('');
-  // Mic reset
-  resetSimMic();
-  // Timer bar reset
-  document.getElementById('sim-timer-bar').style.width = '100%';
-  document.getElementById('sim-timer-bar').style.background = 'var(--accent2)';
-  // Feedback hide
-  document.getElementById('sim-feedback').classList.add('hidden');
-  // Transcript hide
-  document.getElementById('sim-transcript').classList.add('hidden');
-  // Speak question
-  setTimeout(() => speak(q.q), 300);
-}
+  let html = '<div class="bl-header">';
+  html += '<div class="bl-title">' + escH(cat.cat) + '</div>';
+  if (secInfo) html += '<div class="bl-sub" style="color:var(--accent);font-size:12px;margin-top:2px;">' + escH(secInfo.label) + '</div>';
 
-function toggleModel() {
-  const m = document.getElementById('sim-model');
-  const t = document.getElementById('sim-tips');
-  const btn = document.querySelector('#sim-model-wrap button');
-  if (m.classList.contains('hidden')) { m.classList.remove('hidden'); t.classList.remove('hidden'); btn.textContent = 'Esconder resposta'; }
-  else { m.classList.add('hidden'); t.classList.add('hidden'); btn.textContent = 'Ver resposta modelo'; }
-}
-
-function resetSimMic() {
-  simElapsed = 0; simTranscript = '';
-  if (simTimerInterval) clearInterval(simTimerInterval);
-  if (simRec) { try { simRec.abort(); } catch(e){} simRec = null; }
-  simRecognizing = false;
-  const mic = document.getElementById('sim-mic');
-  mic.className = 'mic-btn idle'; mic.textContent = '🎙';
-  document.getElementById('sim-mic-label').textContent = 'Toque para responder';
-  document.getElementById('sim-timer-display').classList.add('hidden');
-}
-
-function simToggleMic() {
-  if (simRecognizing) { simStopMic(); return; }
-  simStartMic();
-}
-
-function simStartMic() {
-  simTranscript = ''; simElapsed = 0;
-  const mic = document.getElementById('sim-mic');
-  mic.className = 'mic-btn listening'; mic.textContent = '⏹';
-  document.getElementById('sim-mic-label').textContent = 'Gravando... toque para parar';
-  document.getElementById('sim-timer-display').classList.remove('hidden');
-  document.getElementById('sim-feedback').classList.add('hidden');
-  document.getElementById('sim-transcript').classList.add('hidden');
-
-  simTimerInterval = setInterval(() => {
-    simElapsed++;
-    const d = document.getElementById('sim-timer-display');
-    const m = Math.floor(simElapsed/60); const s = simElapsed%60;
-    d.textContent = m + ':' + String(s).padStart(2,'0');
-    // Timer bar (target: 60s for br, 90s for int)
-    const target = simType === 'br' ? 60 : 90;
-    const pct = Math.min(simElapsed / target * 100, 100);
-    const bar = document.getElementById('sim-timer-bar');
-    bar.style.width = (100 - pct) + '%';
-    bar.style.background = pct < 70 ? 'var(--accent2)' : pct < 90 ? 'var(--accent3)' : 'var(--danger)';
-  }, 1000);
-
-  simRec = initRecognition(
-    (e) => { let t=''; for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) t+=e.results[i][0].transcript+' '; simTranscript += t; },
-    () => { if(simRecognizing){simRec.start();} }
-  );
-  if (!simRec) return;
-  simRecognizing = true;
-  simRec.start();
-}
-
-function simStopMic() {
-  simRecognizing = false;
-  if (simTimerInterval) clearInterval(simTimerInterval);
-  if (simRec) { try { simRec.stop(); } catch(e){} }
-  const mic = document.getElementById('sim-mic');
-  mic.className = 'mic-btn done'; mic.textContent = '✓';
-  document.getElementById('sim-mic-label').textContent = 'Resposta gravada';
-  showSimFeedback();
-}
-
-function showSimFeedback() {
-  const q = simQueue[simIndex];
-  const target = simType === 'br' ? 60 : 90;
-  const t = simElapsed;
-  const kwResults = scoreKeywords(simTranscript, q.keywords);
-  const found = kwResults.filter(k => k.found).length;
-  const pct = Math.round(found / q.keywords.length * 100);
-
-  // Verdict
-  let verdict = '', vcolor = '';
-  if (t < 15) { verdict = '⚡ Muito curto — expanda'; vcolor = 'var(--danger)'; }
-  else if (t <= target * 1.1) { verdict = '✅ Tempo ideal!'; vcolor = 'var(--accent2)'; }
-  else { verdict = '⏰ Um pouco longo'; vcolor = 'var(--accent3)'; }
-
-  document.getElementById('sim-verdict').textContent = verdict;
-  document.getElementById('sim-verdict').style.color = vcolor;
-
-  // Scores
-  const m = Math.floor(t/60), s = t%60;
-  document.getElementById('sim-scores').innerHTML = `
-    <div class="score-box"><div class="score-val" style="color:${t<=target*1.1?'var(--accent2)':'var(--accent3)'}">
-      ${m>0?m+'m ':''}${s}s</div><div class="score-lbl">Tempo</div></div>
-    <div class="score-box"><div class="score-val" style="color:${pct>=60?'var(--accent2)':'var(--accent3)'}">
-      ${pct}%</div><div class="score-lbl">Palavras-chave</div></div>
-    <div class="score-box"><div class="score-val">${found}/${q.keywords.length}</div><div class="score-lbl">Detectadas</div></div>
-  `;
-
-  // Keywords
-  const kwRow = document.getElementById('sim-keywords');
-  kwRow.innerHTML = kwResults.map(k =>
-    `<span class="kw-pill ${k.found?'kw-found':'kw-miss'}">${k.found?'✓':'✗'} ${k.kw}</span>`
-  ).join('');
-
-  // Transcript
-  if (simTranscript.trim()) {
-    const tr = document.getElementById('sim-transcript');
-    tr.textContent = simTranscript.trim() || '(nada detectado)';
-    tr.classList.remove('hidden');
+  // Mode instructions
+  if (blMode === 'shadow') {
+    html += '<div style="font-size:12px;color:var(--orange);background:#2a1a08;border:1px solid #5a3a10;border-radius:8px;padding:8px 12px;margin-top:8px;">'
+          + '🎧 <b>Modo Shadowing:</b> Ouça → repita em voz alta → revele o texto para conferir. '
+          + 'Não leia antes de ouvir.</div>';
+  } else if (blMode === 'produce') {
+    html += '<div style="font-size:12px;color:var(--purple);background:#1a0f2a;border:1px solid #4a2a7a;border-radius:8px;padding:8px 12px;margin-top:8px;">'
+          + '🗣 <b>Modo Produzir:</b> Leia o português → diga o inglês em voz alta → revele para conferir.</div>';
   }
+  html += '</div>';
 
-  document.getElementById('sim-feedback').classList.remove('hidden');
+  cat.items.forEach((item, i) => {
+    const sid = 'item-' + ci + '-' + i;
+    const pkey = ci + '_' + i;
+    const practiced = S.practiced[pkey];
+    const safeEn = item.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safePt = item.pt.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    html += '<div class="item-card' + (practiced ? ' practiced' : '') + '" id="' + sid + '">';
 
-  // Save to history
-  state.simHistory.push({ date: new Date().toISOString(), qId: q.id, time: t, kwPct: pct });
-  saveState();
+    if (blMode === 'read') {
+      // Normal mode: EN visible, PT below
+      html += '<div class="item-en">' + escH(item.en) + '</div>';
+      html += '<div class="item-pt">' + escH(item.pt) + '</div>';
+      if (item.note) html += '<div class="item-note">💡 ' + escH(item.note) + '</div>';
+      html += '<div class="item-btns">';
+      html += '<button class="ibtn" id="' + sid + '-a" onclick="playItem(\'' + safeEn + '\',\'' + sid + '-a\',0.88)">🔊 Ouvir</button>';
+      html += '<button class="ibtn" onclick="speak(\'' + safeEn + '\',0.65)">🐢 Devagar</button>';
+      html += '<button class="ibtn' + (practiced?' practiced-btn':'') + '" onclick="markPracticed(\'' + pkey + '\',\'' + sid + '\')">'+  (practiced?'✓ Feito':'Marcar ✓') + '</button>';
+      html += '</div>';
+
+    } else if (blMode === 'shadow') {
+      // Shadow mode: EN hidden, reveal on click
+      html += '<div class="item-en item-en-hidden" id="' + sid + '-en" onclick="revealEn(\'' + sid + '-en\')">'+escH(item.en)+'</div>';
+      html += '<div style="font-size:11px;color:var(--text3);margin-top:4px;">👆 Toque para revelar depois de repetir</div>';
+      if (item.note) html += '<div class="item-note">💡 ' + escH(item.note) + '</div>';
+      html += '<div class="item-btns">';
+      html += '<button class="ibtn" id="' + sid + '-a" onclick="playItem(\'' + safeEn + '\',\'' + sid + '-a\',0.88)">🔊 Ouvir primeiro</button>';
+      html += '<button class="ibtn" onclick="speak(\'' + safeEn + '\',0.65)">🐢 Devagar</button>';
+      html += '<button class="ibtn" onclick="markPracticed(\'' + pkey + '\',\'' + sid + '\')">Repeti ✓</button>';
+      html += '</div>';
+
+    } else if (blMode === 'produce') {
+      // Produce mode: only PT visible, EN hidden
+      html += '<div class="item-pt" style="font-size:14px;font-style:normal;color:var(--text);margin-bottom:8px;">'+escH(item.pt)+'</div>';
+      html += '<div class="item-en item-en-hidden" id="' + sid + '-en" onclick="revealEn(\'' + sid + '-en\')" style="margin-top:6px;">'+escH(item.en)+'</div>';
+      html += '<div style="font-size:11px;color:var(--text3);margin-top:4px;">👆 Diga o inglês em voz alta, depois toque para revelar</div>';
+      if (item.note) html += '<div class="item-note">💡 ' + escH(item.note) + '</div>';
+      html += '<div class="item-btns">';
+      html += '<button class="ibtn" onclick="speak(\'' + safeEn + '\',0.65)">🔊 Conferir pronúncia</button>';
+      html += '<button class="ibtn" onclick="markPracticed(\'' + pkey + '\',\'' + sid + '\')">Produzi ✓</button>';
+      html += '</div>';
+    }
+
+    html += '</div>'; // item-card
+  });
+
+  container.innerHTML = html;
+  container.scrollTop = 0;
 }
 
-function simRetry() { resetSimMic(); document.getElementById('sim-feedback').classList.add('hidden'); document.getElementById('sim-transcript').classList.add('hidden'); }
-function simNext() { simIndex++; loadSimQuestion(); }
-function endSimulator() { if(simRecognizing)simStopMic(); showSimResult(); }
-
-function showSimResult() {
-  document.getElementById('sim-session').classList.add('hidden');
-  const res = document.getElementById('sim-result');
-  res.classList.remove('hidden');
-  document.getElementById('sim-result-text').textContent = `Você praticou ${simIndex} perguntas nesta sessão.`;
-  document.getElementById('sim-result-stats').innerHTML = `
-    <div class="stat-box"><div class="stat-val" style="color:var(--accent)">${simIndex}</div><div class="stat-lbl">Perguntas</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--accent2)">${state.simHistory.length}</div><div class="stat-lbl">Total histórico</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--accent3)">${Math.floor(state.todaySeconds/60)}min</div><div class="stat-lbl">Hoje</div></div>
-  `;
+function revealEn(elId) {
+  const el = document.getElementById(elId);
+  if (el) el.classList.add('revealed');
 }
 
-function resetSimulator() {
-  document.getElementById('sim-result').classList.add('hidden');
-  document.getElementById('sim-start').classList.remove('hidden');
+function markPracticed(pkey, sid) {
+  S.practiced[pkey] = true;
+  saveS();
+  const card = document.getElementById(sid);
+  if (card) card.classList.add('practiced');
+  // Update button
+  const btns = card ? card.querySelectorAll('.ibtn') : [];
+  btns.forEach(b => { if (b.textContent.includes('Marcar') || b.textContent.includes('Repeti') || b.textContent.includes('Produzi')) b.textContent = '✓ Feito'; });
+  updateStreak();
 }
 
-// ══════════════════════════════════════════════════════════
+function playItem(text, btnId, rate) {
+  speak(text, rate);
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.classList.add('playing');
+  btn.textContent = '🔊 Tocando…';
+  setTimeout(() => {
+    btn.classList.remove('playing');
+    btn.textContent = '🔊 Ouvir';
+  }, text.split(' ').length * 500 + 800);
+}
+
+// ══════════════════════════════════════════════
+// LIFELINES
+// ══════════════════════════════════════════════
+function buildLifelines() {
+  const grid = document.getElementById('ll-grid');
+  grid.innerHTML = '';
+  LIFELINES.forEach((ll, i) => {
+    const safePhrase = ll.phrase.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const card = document.createElement('div');
+    card.className = 'll-card';
+    card.style.cssText = 'background:' + ll.color + ';border-color:' + ll.borderColor + ';';
+    card.innerHTML =
+      '<div class="ll-tag" style="color:' + ll.borderColor + '">' + escH(ll.situation) + '</div>' +
+      '<div class="ll-phrase" style="color:' + ll.textColor + '">"' + escH(ll.phrase) + '"</div>' +
+      '<div class="ll-pt" style="color:' + ll.textColor + '">' + escH(ll.pt) + '</div>' +
+      '<button class="ll-btn" style="color:' + ll.textColor + ';border-color:' + ll.borderColor + ';" onclick="speak(\'' + safePhrase + '\')">🔊 Ouvir</button>' +
+      ' <button class="ll-btn" style="color:' + ll.textColor + ';border-color:' + ll.borderColor + ';" onclick="speak(\'' + safePhrase + '\',0.65)">🐢 Devagar</button>';
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════
 // CRONÔMETRO
-// ══════════════════════════════════════════════════════════
-let ctDuration = 30;
-let ctPromptText = '';
-let ctRunning = false;
-let ctInterval = null;
-let ctElapsed = 0;
-let ctRec = null;
-let ctRecognizing = false;
-
-function setDuration(d, el) {
-  ctDuration = d;
-  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+// ══════════════════════════════════════════════
+function setDur(d, el) {
+  ctDur = d;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
 }
 
 function newPrompt() {
-  const p = CT_PROMPTS[Math.floor(Math.random() * CT_PROMPTS.length)];
-  ctPromptText = p;
-  document.getElementById('ct-prompt').textContent = p;
+  ctPromptText = CT_PROMPTS[Math.floor(Math.random() * CT_PROMPTS.length)];
+  document.getElementById('ct-prompt').textContent = ctPromptText;
 }
 
-function startCronometro() {
-  if (!ctPromptText) { newPrompt(); }
-  document.getElementById('ct-prompt-running').textContent = ctPromptText;
-  document.getElementById('ct-prompt-wrap').classList.add('hidden');
-  document.getElementById('ct-running').classList.remove('hidden');
-  document.getElementById('ct-done').classList.add('hidden');
-
-  ctElapsed = 0; ctRunning = true;
-  const total = 327; // SVG circle circumference
-  updateRing(ctDuration, ctDuration, total);
-
+function startCt() {
+  if (!ctPromptText) newPrompt();
+  document.getElementById('ct-setup').style.display = 'none';
+  document.getElementById('ct-done').style.display = 'none';
+  document.getElementById('ct-running').style.display = 'block';
+  document.getElementById('ct-run-prompt').textContent = ctPromptText;
+  document.getElementById('ct-num').textContent = ctDur;
+  ctElapsed = 0; ctGoing = true;
+  updateRing(ctDur, ctDur);
   ctInterval = setInterval(() => {
     ctElapsed++;
-    const remaining = ctDuration - ctElapsed;
-    document.getElementById('ct-seconds').textContent = Math.max(0, remaining);
-    updateRing(remaining, ctDuration, total);
+    const rem = ctDur - ctElapsed;
+    document.getElementById('ct-num').textContent = Math.max(0, rem);
+    updateRing(rem, ctDur);
     const ring = document.getElementById('ct-ring');
-    ring.style.stroke = remaining > ctDuration * 0.4 ? 'var(--accent2)' : remaining > ctDuration * 0.15 ? 'var(--accent3)' : 'var(--danger)';
-    if (ctElapsed >= ctDuration) { stopCronometro(true); }
+    ring.style.stroke = rem > ctDur*.35 ? '#38d9a9' : rem > ctDur*.15 ? '#ffa94d' : '#ff6b6b';
+    if (ctElapsed >= ctDur) stopCt(true);
   }, 1000);
-
-  // Start recognition
-  ctRec = initRecognition(
-    () => {},
-    () => { if(ctRecognizing) ctRec.start(); }
-  );
-  if (ctRec) { ctRecognizing = true; ctRec.start(); }
+  // Mic input disabled
 }
 
-function updateRing(remaining, total, circum) {
-  const pct = Math.max(0, remaining / total);
-  document.getElementById('ct-ring').style.strokeDashoffset = circum * (1 - pct);
+function updateRing(rem, total) {
+  const circ = 364.4;
+  const offset = circ * (1 - Math.max(0, rem) / total);
+  document.getElementById('ct-ring').style.strokeDashoffset = offset;
 }
 
-function stopCronometro(completed) {
-  ctRunning = false;
-  if (ctInterval) clearInterval(ctInterval);
-  ctRecognizing = false;
-  if (ctRec) { try { ctRec.stop(); } catch(e){} }
-
-  document.getElementById('ct-running').classList.add('hidden');
-  document.getElementById('ct-done').classList.remove('hidden');
-
-  const pct = ctElapsed / ctDuration;
-  if (completed || pct >= 0.9) {
-    document.getElementById('ct-result-emoji').textContent = '🎉';
-    document.getElementById('ct-result-title').textContent = 'Parabéns! Você completou os ' + ctDuration + ' segundos.';
-    document.getElementById('ct-result-sub').textContent = 'Continue assim. Cada sessão aumenta sua confiança.';
-  } else if (pct >= 0.5) {
-    document.getElementById('ct-result-emoji').textContent = '👍';
-    document.getElementById('ct-result-title').textContent = Math.round(ctElapsed) + 's de ' + ctDuration + 's — bom progresso!';
+function stopCt(completed) {
+  ctGoing = false;
+  if (ctInterval) { clearInterval(ctInterval); ctInterval = null; }
+  if (ctRec) { try { ctRec.stop(); } catch(e) {} ctRec = null; }
+  document.getElementById('ct-running').style.display = 'none';
+  document.getElementById('ct-done').style.display = 'block';
+  const pct = ctElapsed / ctDur;
+  if (completed || pct >= .9) {
+    document.getElementById('ct-emoji').textContent = '🎉';
+    document.getElementById('ct-result-title').textContent = 'Parabéns! Você completou os ' + ctDur + 's.';
+    document.getElementById('ct-result-sub').textContent = 'Continue assim — cada sessão aumenta sua confiança.';
+  } else if (pct >= .5) {
+    document.getElementById('ct-emoji').textContent = '👍';
+    document.getElementById('ct-result-title').textContent = Math.round(ctElapsed) + 's de ' + ctDur + 's — bom progresso!';
     document.getElementById('ct-result-sub').textContent = 'Tente completar o tempo inteiro na próxima.';
   } else {
-    document.getElementById('ct-result-emoji').textContent = '💪';
-    document.getElementById('ct-result-title').textContent = 'Curto, mas é um começo!';
-    document.getElementById('ct-result-sub').textContent = 'Trave menos — use frases simples e continue falando mesmo com erros.';
+    document.getElementById('ct-emoji').textContent = '💪';
+    document.getElementById('ct-result-title').textContent = 'Curto, mas é um começo.';
+    document.getElementById('ct-result-sub').textContent = 'Não trave — frases simples são suficientes. Continue falando.';
   }
-
-  // History
-  state.ctHistory.unshift({ date: new Date().toISOString(), prompt: ctPromptText.slice(0,50), duration: ctDuration, elapsed: Math.round(ctElapsed) });
-  state.ctHistory = state.ctHistory.slice(0, 20);
-  saveState();
-  renderCtHistory();
+  S.ctHist.unshift({ date: new Date().toISOString(), prompt: ctPromptText.slice(0,50), dur: ctDur, elapsed: Math.round(ctElapsed) });
+  S.ctHist = S.ctHist.slice(0, 30);
+  saveS(); renderCtHist();
 }
 
-function resetCronometro() {
-  document.getElementById('ct-prompt-wrap').classList.remove('hidden');
-  document.getElementById('ct-running').classList.add('hidden');
-  document.getElementById('ct-done').classList.add('hidden');
-  document.getElementById('ct-seconds').textContent = ctDuration;
+function resetCt() {
+  document.getElementById('ct-setup').style.display = 'block';
+  document.getElementById('ct-running').style.display = 'none';
+  document.getElementById('ct-done').style.display = 'none';
+  // Clear scaffold
+  const st = document.getElementById('scaffold-text');
+  if (st) st.textContent = '';
+  const sb = document.getElementById('scaffold-btn');
+  if (sb) { sb.textContent = 'Mostrar início'; sb.style.color = ''; }
 }
 
-function newPromptAndReset() {
-  newPrompt();
-  resetCronometro();
+function toggleScaffold() {
+  const st = document.getElementById('scaffold-text');
+  const sb = document.getElementById('scaffold-btn');
+  if (!st || !sb) return;
+  if (st.textContent) {
+    st.textContent = '';
+    sb.textContent = 'Mostrar início';
+    sb.style.color = '';
+  } else {
+    // Show first 3-4 words of prompt as scaffold
+    const words = ctPromptText.split(' ').slice(0,4).join(' ') + '…';
+    st.textContent = words;
+    sb.textContent = 'Esconder';
+    sb.style.color = 'var(--accent)';
+  }
 }
 
-function renderCtHistory() {
-  const el = document.getElementById('ct-history');
-  const today = state.ctHistory.filter(h => h.date.startsWith(new Date().toISOString().split('T')[0]));
-  if (today.length === 0) { el.textContent = 'Nenhum treino hoje ainda.'; return; }
-  el.innerHTML = today.map(h => `
-    <div class="flex gap8 mt8" style="font-size:12px;">
-      <span class="badge ${h.elapsed >= h.duration * 0.9 ? 'badge-green' : 'badge-orange'}">${h.elapsed}/${h.duration}s</span>
-      <span style="color:var(--text2)">${h.prompt}...</span>
-    </div>
-  `).join('');
+function renderCtHist() {
+  const el = document.getElementById('ct-hist');
+  const today = S.ctHist.filter(h => h.date.startsWith(new Date().toISOString().slice(0,10)));
+  if (!today.length) { el.innerHTML = '<span style="color:var(--text3);font-size:13px;">Nenhum treino hoje ainda.</span>'; return; }
+  el.innerHTML = today.map(h =>
+    '<div class="ct-hist-row"><span class="badge ' + (h.elapsed >= h.dur*.9 ? 'bg' : 'bo') + '">' +
+    h.elapsed + '/' + h.dur + 's</span><span style="color:var(--text2);font-size:12px;">' + escH(h.prompt) + '…</span></div>'
+  ).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-// VOCAB
-// ══════════════════════════════════════════════════════════
-let vocabFilter = 'Todos';
-
-function renderVocab() {
+// ══════════════════════════════════════════════
+// VOCABULÁRIO
+// ══════════════════════════════════════════════
+function buildVocabFilters() {
   const cats = ['Todos', ...new Set(VOCAB_ITEMS.map(v => v.cat))];
-  const filterEl = document.getElementById('vocab-filters');
-  filterEl.innerHTML = cats.map(c => `
-    <button class="btn btn-sm ${c===vocabFilter?'btn-primary':'btn-ghost'}" onclick="setVocabFilter('${c}')">${c}</button>
-  `).join('');
-
-  const items = vocabFilter === 'Todos' ? VOCAB_ITEMS : VOCAB_ITEMS.filter(v => v.cat === vocabFilter);
-  const grid = document.getElementById('vocab-grid');
-  grid.innerHTML = items.map((item, i) => {
-    const key = 'v_' + item.en;
-    const prog = state.vocabProgress[key] || { reps: 0, mastered: false };
-    const stars = '⭐'.repeat(Math.min(prog.reps, 3)) + '☆'.repeat(Math.max(0, 3 - prog.reps));
-    return `
-      <div class="vocab-item ${prog.mastered ? 'mastered' : ''}" onclick="vocabTap('${key}', '${item.en.replace(/'/g,"\\'")}')">
-        <div class="vocab-en">${item.en}</div>
-        <div class="vocab-pron">${item.pron}</div>
-        <div class="vocab-pt">${item.pt}</div>
-        <div class="flex gap8 mt8">
-          <div class="vocab-stars">${stars}</div>
-          <button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;" onclick="event.stopPropagation();speak('${item.en.replace(/'/g,"\\'")}')">🔊</button>
-          <button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;" onclick="event.stopPropagation();vocabMark('${key}',${JSON.stringify(item).replace(/"/g,'&quot;')})">✓</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  updateVocabStats();
+  const filters = document.getElementById('vc-filters');
+  filters.innerHTML = cats.map(c =>
+    '<button class="flt' + (c === vcFilter ? ' on' : '') + '" onclick="setVcFilter(\'' + c + '\')">' + c + '</button>'
+  ).join('');
 }
 
-function setVocabFilter(cat) { vocabFilter = cat; renderVocab(); }
-
-function vocabTap(key, word) { speak(word); }
-
-function vocabMark(key, item) {
-  if (typeof item === 'string') item = JSON.parse(item);
-  const prog = state.vocabProgress[key] || { reps: 0, mastered: false };
-  prog.reps = Math.min(prog.reps + 1, 3);
-  prog.mastered = prog.reps >= 3;
-  state.vocabProgress[key] = prog;
-  saveState();
+function setVcFilter(cat) {
+  vcFilter = cat;
+  buildVocabFilters();
   renderVocab();
 }
 
-function updateVocabStats() {
+function renderVocab() {
+  const items = vcFilter === 'Todos' ? VOCAB_ITEMS : VOCAB_ITEMS.filter(v => v.cat === vcFilter);
+  const grid = document.getElementById('vc-grid');
+  grid.innerHTML = items.map((item) => {
+    const key = 'v_' + item.en;
+    const prog = S.vocab[key] || { reps: 0 };
+    const done = prog.reps >= 3;
+    const stars = '⭐'.repeat(Math.min(prog.reps,3)) + '☆'.repeat(Math.max(0,3-prog.reps));
+    const safeEn = item.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const srId = 'sr-' + key.replace(/[^a-z0-9]/gi,'');
+    return '<div class="vc-card' + (done?' done':'') + '" onclick="vcTap(\'' + escH(key) + '\')">' +
+      '<div class="vc-en">' + escH(item.en) + '</div>' +
+      '<div class="vc-pron">' + escH(item.pron) + '</div>' +
+      '<div class="vc-pt">' + escH(item.pt) + '</div>' +
+      '<div class="vc-bottom">' +
+      '<div class="vc-stars">' + stars + '</div>' +
+      '<div style="display:flex;gap:4px;">' +
+      '<button class="vc-speak" id="' + srId + '" onclick="event.stopPropagation();vcSpeakAndCheck(\'' + escH(key) + '\',\'' + safeEn + '\',\'' + srId + '\')">🎤 Falar</button>' +
+      '<button class="vc-speak" onclick="event.stopPropagation();vcMark(\'' + escH(key) + '\',this)" title="Marcar como sabida">✓</button>' +
+      '</div></div>' +
+      '</div>';
+  }).join('');
+
+  // Stats
   const total = VOCAB_ITEMS.length;
-  const mastered = VOCAB_ITEMS.filter(v => (state.vocabProgress['v_' + v.en] || {}).mastered).length;
-  document.getElementById('v-total').textContent = total;
-  document.getElementById('v-mastered').textContent = mastered;
+  const mastered = VOCAB_ITEMS.filter(v => (S.vocab['v_'+v.en]||{}).reps >= 3).length;
+  document.getElementById('v-tot').textContent = total;
+  document.getElementById('v-dom').textContent = mastered;
   document.getElementById('v-pct').textContent = Math.round(mastered/total*100) + '%';
 }
 
-// ══════════════════════════════════════════════════════════
+function vcTap(key) {
+  // Just play audio on tap; ✓ button marks progress
+  const item = VOCAB_ITEMS.find(v => 'v_' + v.en === key);
+  if (item) speak(item.en);
+}
+
+function vcMark(key, el) {
+  const p = S.vocab[key] || { reps: 0 };
+  p.reps = Math.min(p.reps + 1, 3);
+  S.vocab[key] = p;
+  saveS(); renderVocab(); updateStreak();
+}
+
+function vcSpeak(en) { speak(en); }
+
+function vcSpeakAndCheck(key, en, srBtnId) {
+  // Mic input disabled — just play TTS
+  speak(en);
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length:m+1}, (_,i) => Array.from({length:n+1}, (_,j) => i||j));
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++)
+    dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function escH(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════════════════════
-loadState();
-updateTimeDisplay();
-updateDaysDisplay();
-startTracking();
+// ══════════════════════════════════════════════
+loadS();
+updateDays();
+updateHdrTime();
+updateStreak();
+tracking = true; lastTick = Date.now();
+buildSidebar();
+selectCat(0);
+buildLifelines();
 newPrompt();
-renderCtHistory();
-renderBlocos();
-renderLifelines();
-// Pre-load voices
+renderCtHist();
+buildVocabFilters();
+renderVocab();
 if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = () => {}; window.speechSynthesis.getVoices(); }
+initAQ();
 </script>
 </body>
 </html>
+<script>
+// ══════════════════════════════════════════════
+// ÁUDIOS Q&A — DATA
+// 25 perguntas + respostas completas
+// Cada answer é array de chunks {en, pt} para legendas
+// ══════════════════════════════════════════════
+
+const QA_DATA = [
+  {
+    id: 1,
+    q_en: "Tell us about yourself.",
+    q_pt: "Fale sobre você.",
+    chunks: [
+      { en: "Hello everyone! My name is Ailton Cunha.", pt: "Olá a todos! Meu nome é Ailton Cunha." },
+      { en: "I was born and raised on a farm in rural Minas Gerais, Brazil,", pt: "Nasci e cresci em uma fazenda no interior de Minas Gerais, Brasil," },
+      { en: "where I lived until I was 17, when I left to study at the Federal University of Viçosa,", pt: "onde vivi até os 17 anos, quando fui estudar na Universidade Federal de Viçosa," },
+      { en: "an institution strongly tied to agriculture.", pt: "uma instituição fortemente ligada à agricultura." },
+      { en: "After graduating, I moved to São Paulo,", pt: "Após me formar, me mudei para São Paulo," },
+      { en: "where I spent years working on leadership programs at Fundação Estudar,", pt: "onde passei anos trabalhando com programas de liderança na Fundação Estudar," },
+      { en: "a non-profit organisation founded by the people behind 3G Capital.", pt: "uma organização sem fins lucrativos fundada pelas pessoas por trás do 3G Capital." },
+      { en: "I also had the opportunity to be one of the co-founders of Produtor Agro,", pt: "Também tive a oportunidade de ser um dos cofundadores do Produtor Agro," },
+      { en: "a marketplace for agricultural inputs.", pt: "um marketplace de insumos agrícolas." },
+      { en: "More recently, I've been leading Agrominas Fertilizantes,", pt: "Mais recentemente, tenho liderado a Agrominas Fertilizantes," },
+      { en: "a Brazilian company specialised in natural fertilisers", pt: "uma empresa brasileira especializada em fertilizantes naturais" },
+      { en: "such as magnesium silicate and reactive natural phosphate.", pt: "como silicato de magnésio e fosfato natural reativo." },
+      { en: "Alongside my career as an executive, I'm also a coffee and orange grower in the south of Minas Gerais.", pt: "Além da minha carreira como executivo, também sou produtor de café e laranja no sul de Minas Gerais." },
+      { en: "These experiences have led me to one question:", pt: "Essas experiências me levaram a uma pergunta:" },
+      { en: "What are the possible arrangements to finance the transition of our production model towards regenerative agriculture?", pt: "Quais são os possíveis arranjos para financiar a transição do nosso modelo de produção para a agricultura regenerativa?" },
+      { en: "I believe this is a high-impact challenge for the resilience and profitability of Brazilian agriculture,", pt: "Acredito que este é um desafio de alto impacto para a resiliência e a rentabilidade da agricultura brasileira," },
+      { en: "as well as for global food security.", pt: "bem como para a segurança alimentar global." },
+      { en: "I'm counting on Nuffield for this challenge.", pt: "Conto com o Nuffield para esse desafio." }
+    ]
+  },
+  {
+    id: 2,
+    q_en: "What are your main strengths?",
+    q_pt: "Quais são seus principais pontos fortes?",
+    chunks: [
+      { en: "One word: connector.", pt: "Uma palavra: conector." },
+      { en: "The ability to mobilize and connect people and ideas around a shared goal.", pt: "A capacidade de mobilizar e conectar pessoas e ideias em torno de um objetivo comum." },
+      { en: "One example was building the technology scholarship program at Fundação Estudar,", pt: "Um exemplo foi a construção do programa de bolsas de tecnologia na Fundação Estudar," },
+      { en: "where we increased the percentage of Brazilians enrolled at the world's top universities.", pt: "onde aumentamos o percentual de brasileiros matriculados nas melhores universidades do mundo." },
+      { en: "I've been on both sides — the farm and the boardroom.", pt: "Estive nos dois lados — na fazenda e na sala de reuniões." },
+      { en: "That combination is rare.", pt: "Essa combinação é rara." }
+    ]
+  },
+  {
+    id: 3,
+    q_en: "What are your strengths and weaknesses?",
+    q_pt: "Quais são seus pontos fortes e fracos?",
+    chunks: [
+      { en: "Honest answer:", pt: "Resposta honesta:" },
+      { en: "my biggest weakness right now is my English proficiency — it limits me in many opportunities.", pt: "minha maior fraqueza agora é meu nível de inglês — ele me limita em muitas oportunidades." },
+      { en: "I also tend to underestimate how difficult some things can be.", pt: "Também tendo a subestimar o quão difíceis algumas coisas podem ser." },
+      { en: "On the strength side, my ability to mobilize people and connect ideas and individuals.", pt: "No lado positivo, minha capacidade de mobilizar pessoas e conectar ideias e indivíduos." }
+    ]
+  },
+  {
+    id: 4,
+    q_en: "What was the biggest professional or technical challenge you've faced?",
+    q_pt: "Qual foi o maior desafio profissional ou técnico que você enfrentou?",
+    chunks: [
+      { en: "Doing online sales to rural producers in 2017,", pt: "Fazer vendas online para produtores rurais em 2017," },
+      { en: "when major platforms like Mercado Livre were still viewed with suspicion by many farmers.", pt: "quando grandes plataformas como o Mercado Livre ainda eram vistas com desconfiança por muitos produtores." },
+      { en: "It took more than sixty tests before the first sales came through,", pt: "Foram necessários mais de sessenta testes antes das primeiras vendas acontecerem," },
+      { en: "after we pivoted to a strategy focused on university students in agricultural hub regions,", pt: "depois que pivotamos para uma estratégia focada em estudantes universitários em regiões agrícolas," },
+      { en: "where we were able to reach the next generation of farm operators.", pt: "onde conseguimos alcançar a próxima geração de operadores rurais." },
+      { en: "That experience taught me the importance of disciplined testing when pioneering something disruptive.", pt: "Essa experiência me ensinou a importância de testes disciplinados ao pioneirar algo disruptivo." }
+    ]
+  },
+  {
+    id: 5,
+    q_en: "Tell us about a time you failed.",
+    q_pt: "Fale sobre uma vez que você falhou.",
+    chunks: [
+      { en: "I ran for office. I lost.", pt: "Me candidatei a um cargo. Perdi." },
+      { en: "And I learned something more important than winning:", pt: "E aprendi algo mais importante do que ganhar:" },
+      { en: "I attempted something without fully understanding the profile it required.", pt: "Tentei algo sem entender completamente o perfil que exigia." },
+      { en: "After the election, I worked for a few months in Congress", pt: "Após a eleição, trabalhei por alguns meses no Congresso" },
+      { en: "and was able to confirm what I already suspected.", pt: "e pude confirmar o que já suspeitava." },
+      { en: "My real place is in civil society — not politics.", pt: "Meu lugar de verdade é na sociedade civil — não na política." }
+    ]
+  },
+  {
+    id: 6,
+    q_en: "Tell us about a conflict with a colleague, manager, or stakeholder.",
+    q_pt: "Fale sobre um conflito com um colega, gestor ou stakeholder.",
+    chunks: [
+      { en: "Brazil is a very polarized society.", pt: "O Brasil é uma sociedade muito polarizada." },
+      { en: "The mere fact of being connected to agribusiness already places me, in many people's eyes, at one end of the political spectrum,", pt: "O simples fato de estar ligado ao agronegócio já me coloca, aos olhos de muitos, em um extremo do espectro político," },
+      { en: "while advocating for sustainability and regenerative practices places me at the other.", pt: "enquanto defender a sustentabilidade e práticas regenerativas me coloca no outro." },
+      { en: "What I try to do is use data and evidence to show that we actually share many common beliefs:", pt: "O que tento fazer é usar dados e evidências para mostrar que na verdade compartilhamos muitas crenças em comum:" },
+      { en: "I listen to the other person's perspective first and only then address the differences.", pt: "Ouço a perspectiva do outro primeiro e só então abordo as diferenças." }
+    ]
+  },
+  {
+    id: 7,
+    q_en: "What values are non-negotiable for you?",
+    q_pt: "Que valores são inegociáveis para você?",
+    chunks: [
+      { en: "Commitment —", pt: "Comprometimento —" },
+      { en: "whether with family, partners, or strangers,", pt: "seja com família, parceiros ou estranhos," },
+      { en: "the idea of making a commitment and not following through weighs on me.", pt: "a ideia de fazer um compromisso e não cumpri-lo me pesa." },
+      { en: "And integrity —", pt: "E integridade —" },
+      { en: "I believe in long-term relationships, and without integrity that simply isn't possible.", pt: "acredito em relacionamentos de longo prazo, e sem integridade isso simplesmente não é possível." }
+    ]
+  },
+  {
+    id: 8,
+    q_en: "Describe an initiative through which you contributed to communities without compensation.",
+    q_pt: "Descreva uma iniciativa pela qual você contribuiu com comunidades sem compensação.",
+    chunks: [
+      { en: "I've been a teacher at a community college-prep school,", pt: "Fui professor em um cursinho comunitário pré-vestibular," },
+      { en: "a volunteer at Fundação Estudar, and at Instituto Four.", pt: "voluntário na Fundação Estudar e no Instituto Four." },
+      { en: "Throughout my life I've had many people help me,", pt: "Ao longo da minha vida muitas pessoas me ajudaram," },
+      { en: "and I believe that continuing to open doors for others is a way of multiplying that forward.", pt: "e acredito que continuar abrindo portas para outros é uma forma de multiplicar isso." }
+    ]
+  },
+  {
+    id: 9,
+    q_en: "How did you learn about Nuffield? Why do you want to do it? How can you contribute?",
+    q_pt: "Como soube sobre o Nuffield? Por que quer participar? Como pode contribuir?",
+    chunks: [
+      { en: "One thing drew me to Nuffield above all: personal connections at a global level.", pt: "Uma coisa me atraiu no Nuffield acima de tudo: conexões pessoais em nível global." },
+      { en: "Not just reports — people I can actually talk to.", pt: "Não apenas relatórios — pessoas com quem eu possa realmente conversar." },
+      { en: "I first heard about the program a few years ago and was drawn to its flexibility", pt: "Soube do programa há alguns anos e me atraí pela sua flexibilidade" },
+      { en: "and the leading role it gives scholars in shaping their own research agenda.", pt: "e pelo papel central que dá aos scholars na definição de sua própria agenda de pesquisa." },
+      { en: "Through my company I had the opportunity to sponsor two scholars —", pt: "Através da minha empresa tive a oportunidade de patrocinar dois scholars —" },
+      { en: "which gave me an even more positive view of the network's profile.", pt: "o que me deu uma visão ainda mais positiva do perfil da rede." },
+      { en: "I would love to be that connector, bridging experiences and perspectives.", pt: "Adoraria ser esse conector, conectando experiências e perspectivas." }
+    ]
+  },
+  {
+    id: 10,
+    q_en: "Why should Nuffield choose you?",
+    q_pt: "Por que o Nuffield deveria escolher você?",
+    chunks: [
+      { en: "I have three things that are rarely found together:", pt: "Tenho três coisas que raramente se encontram juntas:" },
+      { en: "a background as a rural producer,", pt: "experiência como produtor rural," },
+      { en: "experience as an entrepreneur and executive,", pt: "experiência como empreendedor e executivo," },
+      { en: "and a track record in leadership development and mobilizing people.", pt: "e um histórico em desenvolvimento de liderança e mobilização de pessoas." },
+      { en: "That combination is very well aligned with Nuffield's principles and values.", pt: "Essa combinação está muito bem alinhada com os princípios e valores do Nuffield." },
+      { en: "Being able to present myself as a scholar would allow me to bring knowledge and strong connections to Brazil,", pt: "Poder me apresentar como scholar me permitiria trazer conhecimento e conexões fortes para o Brasil," },
+      { en: "and better connect those who are making a difference here.", pt: "e conectar melhor aqueles que estão fazendo a diferença aqui." }
+    ]
+  },
+  {
+    id: 11,
+    q_en: "How can you contribute to Nuffield?",
+    q_pt: "Como você pode contribuir para o Nuffield?",
+    chunks: [
+      { en: "I believe the primary role of a scholar is to embody the organization's values in everyday life.", pt: "Acredito que o papel principal de um scholar é incorporar os valores da organização no dia a dia." },
+      { en: "Beyond that, with my background,", pt: "Além disso, com meu histórico," },
+      { en: "I could connect Nuffield to people and organizations that are not yet part of the network.", pt: "poderia conectar o Nuffield a pessoas e organizações que ainda não fazem parte da rede." }
+    ]
+  },
+  {
+    id: 12,
+    q_en: "Why do this program now?",
+    q_pt: "Por que fazer esse programa agora?",
+    chunks: [
+      { en: "This is something I think about every day.", pt: "Isso é algo que penso todos os dias." },
+      { en: "I believe this is a pivotal moment for Brazil to lead on this issue,", pt: "Acredito que este é um momento decisivo para o Brasil liderar nessa questão," },
+      { en: "and that it would have a significant impact on the profitability and quality of life of rural producers.", pt: "e que teria um impacto significativo na rentabilidade e qualidade de vida dos produtores rurais." },
+      { en: "My profile — achieving good results through networking and autonomy —", pt: "Meu perfil — sempre alcançando bons resultados por meio de networking e autonomia —" },
+      { en: "is exactly what Nuffield's structure amplifies.", pt: "é exatamente o que a estrutura do Nuffield amplifica." },
+      { en: "I wake up and go to sleep thinking about this problem.", pt: "Acordo e durmo pensando nesse problema." }
+    ]
+  },
+  {
+    id: 13,
+    q_en: "If you're not accepted this year, do you plan to apply again?",
+    q_pt: "Se não for aceito este ano, planeja se candidatar novamente?",
+    chunks: [
+      { en: "Right now I've focused all my plans around this research project.", pt: "Agora tenho todos os meus planos focados neste projeto de pesquisa." },
+      { en: "If I'm not accepted, I'll look for other ways to pursue the goal,", pt: "Se não for aceito, vou buscar outras formas de perseguir o objetivo," },
+      { en: "and it may be that I won't be able to fit it in terms of time or priorities in the years ahead.", pt: "e pode ser que não consiga encaixá-lo em termos de tempo ou prioridades nos próximos anos." },
+      { en: "But I will certainly stay close to the network —", pt: "Mas certamente manterei contato com a rede —" },
+      { en: "if not as a scholar, then as a partner, as I already am.", pt: "se não como scholar, então como parceiro, como já sou." }
+    ]
+  },
+  {
+    id: 14,
+    q_en: "How do you plan to fund your participation? Would Agrominas be a sponsor?",
+    q_pt: "Como planeja financiar sua participação? A Agrominas seria patrocinadora?",
+    chunks: [
+      { en: "Initially, I plan to seek other sponsors,", pt: "Inicialmente, planejo buscar outros patrocinadores," },
+      { en: "because my intention is to ask Agrominas for a paid leave of absence for the travel periods.", pt: "pois minha intenção é pedir à Agrominas uma licença remunerada nos períodos de viagem." },
+      { en: "Beyond that, I'd like to use the search for sponsorship to engage key players with the topic and with Nuffield,", pt: "Além disso, gostaria de usar a busca por patrocínio para engajar atores-chave com o tema e com o Nuffield," },
+      { en: "and also to refine my research theme.", pt: "e também para refinar meu tema de pesquisa." }
+    ]
+  },
+  {
+    id: 15,
+    q_en: "How do you plan to organize yourself for the 12 weeks?",
+    q_pt: "Como planeja se organizar para as 12 semanas?",
+    chunks: [
+      { en: "The company I work for is already familiar with Nuffield —", pt: "A empresa onde trabalho já conhece o Nuffield —" },
+      { en: "we've been sponsors for two years, so they're excited about my participation.", pt: "somos patrocinadores há dois anos, então eles estão animados com minha participação." },
+      { en: "On the family side, my wife and I already have experience with extended time apart.", pt: "No lado familiar, minha esposa e eu já temos experiência com períodos prolongados separados." },
+      { en: "She spent a month away at a Harvard program; I spent a month away in Canada.", pt: "Ela passou um mês fora em um programa de Harvard; eu passei um mês fora no Canadá." },
+      { en: "We manage well.", pt: "Nos adaptamos bem." }
+    ]
+  },
+  {
+    id: 16,
+    q_en: "How would you assess your current English level for the program?",
+    q_pt: "Como avalia seu nível atual de inglês para o programa?",
+    chunks: [
+      { en: "Honest answer:", pt: "Resposta honesta:" },
+      { en: "if the trips were starting next month, I wouldn't apply —", pt: "se as viagens começassem no próximo mês, eu não me candidataria —" },
+      { en: "I understand I wouldn't be able to make the most of it at this point.", pt: "entendo que não conseguiria aproveitar ao máximo neste momento." },
+      { en: "However, I have a plan that will have me prioritizing my studies", pt: "No entanto, tenho um plano que me fará priorizar meus estudos" },
+      { en: "so I'm ready by the conference in Zimbabwe in six months.", pt: "para estar pronto para a conferência no Zimbábue em seis meses." }
+    ]
+  },
+  {
+    id: 17,
+    q_en: "What if your English still isn't sufficient when you arrive in Zimbabwe?",
+    q_pt: "E se seu inglês ainda não for suficiente quando chegar ao Zimbábue?",
+    chunks: [
+      { en: "I've already been studying since I decided to apply,", pt: "Já estou estudando desde que decidi me candidatar," },
+      { en: "and I built this plan together with English teachers.", pt: "e construí esse plano junto com professores de inglês." },
+      { en: "I'm quite confident in it.", pt: "Estou bastante confiante nele." },
+      { en: "But if I get there and find it's still not sufficient, I'll intensify my study load —", pt: "Mas se chegar lá e perceber que ainda não é suficiente, vou intensificar minha carga de estudos —" },
+      { en: "since one of my core values is commitment to the agreements I make.", pt: "já que um dos meus valores centrais é o comprometimento com os acordos que faço." }
+    ]
+  },
+  {
+    id: 18,
+    q_en: "How will you contribute to the Global Focus Program group?",
+    q_pt: "Como contribuirá para o grupo do Global Focus Program?",
+    chunks: [
+      { en: "I believe any Brazilian already adds a great deal simply by virtue of the scale and development of agriculture in our country.", pt: "Acredito que qualquer brasileiro já agrega muito simplesmente pela escala e desenvolvimento da agricultura no nosso país." },
+      { en: "But beyond that, my experiences at the intersection of leadership, technology, and farming", pt: "Mas além disso, minhas experiências na interseção de liderança, tecnologia e produção rural" },
+      { en: "give me a profile that can contribute different perspectives to different audiences.", pt: "me dão um perfil que pode contribuir com diferentes perspectivas para diferentes públicos." }
+    ]
+  },
+  {
+    id: 19,
+    q_en: "What is regenerative agriculture?",
+    q_pt: "O que é agricultura regenerativa?",
+    chunks: [
+      { en: "It's an agricultural production model that looks at the system as a whole.", pt: "É um modelo de produção agrícola que olha para o sistema como um todo." },
+      { en: "By addressing the physical, chemical, and biological dimensions of farming,", pt: "Ao abordar as dimensões física, química e biológica da agricultura," },
+      { en: "it is able not only to produce food,", pt: "ele consegue não apenas produzir alimentos," },
+      { en: "but also to regenerate soils and ecosystems while building greater resilience.", pt: "mas também regenerar solos e ecossistemas enquanto constrói maior resiliência." }
+    ]
+  },
+  {
+    id: 20,
+    q_en: "Why is regenerative agriculture relevant?",
+    q_pt: "Por que a agricultura regenerativa é relevante?",
+    chunks: [
+      { en: "My greatest interest is in what I call resilient and balanced agriculture —", pt: "Meu maior interesse é no que chamo de agricultura resiliente e equilibrada —" },
+      { en: "greater resilience to climate events, greater local autonomy, and ecosystem balance.", pt: "maior resiliência a eventos climáticos, maior autonomia local e equilíbrio ecossistêmico." },
+      { en: "Its importance manifests at different levels:", pt: "Sua importância se manifesta em diferentes níveis:" },
+      { en: "globally, in its capacity to ensure food security;", pt: "globalmente, na sua capacidade de garantir segurança alimentar;" },
+      { en: "locally, in ensuring sovereignty for countries and profitability for producers.", pt: "localmente, em garantir soberania para os países e rentabilidade para os produtores." }
+    ]
+  },
+  {
+    id: 21,
+    q_en: "Why is regenerative agriculture difficult to scale?",
+    q_pt: "Por que a agricultura regenerativa é difícil de escalar?",
+    chunks: [
+      { en: "Two reasons — complexity and money.", pt: "Dois motivos — complexidade e dinheiro." },
+      { en: "When you look at a crop in an integrated way, you start managing a larger number of processes —", pt: "Quando você olha para uma lavoura de forma integrada, começa a gerenciar um número maior de processos —" },
+      { en: "many of which are out of balance under current practices —", pt: "muitos dos quais estão desequilibrados nas práticas atuais —" },
+      { en: "with no optimized equipment or techniques as in conventional farming.", pt: "sem equipamentos ou técnicas otimizadas como na agricultura convencional." },
+      { en: "And without investment, it becomes unviable:", pt: "E sem investimento, torna-se inviável:" },
+      { en: "in the first years of transition, costs increase and yields decline,", pt: "nos primeiros anos de transição, os custos aumentam e a produtividade cai," },
+      { en: "according to studies by Boston Consulting Group and Bain & Company.", pt: "de acordo com estudos do Boston Consulting Group e da Bain & Company." }
+    ]
+  },
+  {
+    id: 22,
+    q_en: "How did your research interest develop?",
+    q_pt: "Como seu interesse de pesquisa se desenvolveu?",
+    chunks: [
+      { en: "The core problem is simple: the transition works. What's missing is the money to start it.", pt: "O problema central é simples: a transição funciona. O que falta é o dinheiro para começar." },
+      { en: "As a rural producer, I grew up watching profit margins shrink", pt: "Como produtor rural, cresci vendo as margens de lucro diminuírem" },
+      { en: "and extreme weather events cause increasingly frequent losses.", pt: "e eventos climáticos extremos causarem perdas cada vez mais frequentes." },
+      { en: "My research is about understanding what the optimal blended finance structure looks like to fund that transition —", pt: "Minha pesquisa é sobre entender como é a estrutura ótima de blended finance para financiar essa transição —" },
+      { en: "and what approaches would best fit the Brazilian reality.", pt: "e quais abordagens melhor se encaixam na realidade brasileira." }
+    ]
+  },
+  {
+    id: 23,
+    q_en: "Why is the topic still relevant if you already have answers?",
+    q_pt: "Por que o tema ainda é relevante se você já tem respostas?",
+    chunks: [
+      { en: "That's actually the heart of my research.", pt: "Esse é justamente o coração da minha pesquisa." },
+      { en: "I've studied the topic extensively and I'm aware of possible paths.", pt: "Estudei o tema extensivamente e conheço os possíveis caminhos." },
+      { en: "But I want to understand how these solutions actually emerge and fit into the producer's day-to-day reality —", pt: "Mas quero entender como essas soluções realmente emergem e se encaixam na realidade cotidiana do produtor —" },
+      { en: "by being close to those who are living and driving the transition.", pt: "estando próximo daqueles que estão vivendo e impulsionando a transição." },
+      { en: "Those questions can't be answered from a desk.", pt: "Essas perguntas não podem ser respondidas de uma mesa." }
+    ]
+  },
+  {
+    id: 24,
+    q_en: "Of banks, buyers, and government — which actor has the most power?",
+    q_pt: "Entre bancos, compradores e governo — qual ator tem mais poder?",
+    chunks: [
+      { en: "All three — and here's why none of them works alone:", pt: "Os três — e aqui está o motivo pelo qual nenhum deles funciona sozinho:" },
+      { en: "you need catalytic capital from government and nonprofits;", pt: "você precisa de capital catalisador do governo e de organizações sem fins lucrativos;" },
+      { en: "a financial market that prices the lower risk of more resilient models,", pt: "um mercado financeiro que precifique o menor risco de modelos mais resilientes," },
+      { en: "translating that into accessible interest rates;", pt: "traduzindo isso em taxas de juros acessíveis;" },
+      { en: "and buyers willing to pay a premium for better products.", pt: "e compradores dispostos a pagar um prêmio por produtos melhores." },
+      { en: "The system only moves when all three move together.", pt: "O sistema só se move quando os três se movem juntos." }
+    ]
+  },
+  {
+    id: 25,
+    q_en: "What are you willing to change in your views?",
+    q_pt: "O que você está disposto a mudar em suas visões?",
+    chunks: [
+      { en: "Everything.", pt: "Tudo." },
+      { en: "I work at a company that has breaking paradigms as a core principle.", pt: "Trabalho em uma empresa que tem a quebra de paradigmas como princípio central." },
+      { en: "I have no commitment to being wrong.", pt: "Não tenho compromisso com o erro." },
+      { en: "As long as it's grounded in data and evidence, I can change my mind readily.", pt: "Desde que seja baseado em dados e evidências, posso mudar de ideia prontamente." }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+// ÁUDIOS Q&A — ENGINE
+// ══════════════════════════════════════════════
+
+let aqActive = 0;        // índice da pergunta ativa
+let aqAudioUrl = null;   // blob URL do áudio carregado
+let aqChunkIdx = 0;      // índice do chunk atual nas legendas
+let aqLegEN = true, aqLegPT = true;
+let aqTranscriptOpen = false;
+
+function buildAQList() {
+  const list = document.getElementById('aq-list');
+  list.innerHTML = '';
+  QA_DATA.forEach((qa, i) => {
+    const btn = document.createElement('div');
+    btn.id = 'aq-btn-' + i;
+    btn.style.cssText = 'padding:8px 16px;font-size:12px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all .12s;display:flex;align-items:flex-start;gap:8px;line-height:1.4;';
+    btn.innerHTML = '<span style="flex-shrink:0;color:var(--text3);font-size:11px;margin-top:1px;">Q' + qa.id + '</span>'
+                  + '<span id="aq-btn-text-' + i + '">' + escH(qa.q_en) + '</span>'
+                  + '<span id="aq-done-' + i + '" style="margin-left:auto;flex-shrink:0;color:var(--green);display:' + (S.aqStudied[qa.id] ? 'block' : 'none') + ';">✓</span>';
+    btn.onclick = () => selectQA(i);
+    btn.onmouseover = () => { if (i !== aqActive) btn.style.background = 'var(--bg3)'; };
+    btn.onmouseout = () => { if (i !== aqActive) btn.style.background = ''; };
+    list.appendChild(btn);
+  });
+  highlightAQBtn(aqActive);
+}
+
+function highlightAQBtn(i) {
+  document.querySelectorAll('#aq-list > div').forEach((b, bi) => {
+    const on = bi === i;
+    b.style.borderLeftColor = on ? 'var(--accent)' : 'transparent';
+    b.style.background = on ? 'var(--bg3)' : '';
+    b.style.color = on ? 'var(--text)' : 'var(--text2)';
+    b.style.fontWeight = on ? '500' : '400';
+  });
+}
+
+function selectQA(i) {
+  // Stop current audio
+  const audio = document.getElementById('aq-audio');
+  audio.pause();
+  aqActive = i;
+  aqChunkIdx = 0;
+  highlightAQBtn(i);
+  const qa = QA_DATA[i];
+
+  // Update question box
+  document.getElementById('aq-q-text').textContent = qa.q_en;
+  document.getElementById('aq-q-pt').textContent = qa.q_pt;
+
+  // Reset legend
+  document.getElementById('aq-leg-en').textContent = '';
+  document.getElementById('aq-leg-pt').textContent = '';
+
+  // Reset transcript
+  document.getElementById('aq-trans-en').textContent = qa.chunks.map(c => c.en).join(' ');
+  document.getElementById('aq-trans-pt').textContent = qa.chunks.map(c => c.pt).join(' ');
+
+  // Keep audio if same file is loaded, otherwise reset
+  clearAudio();
+}
+
+function loadAudioFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (aqAudioUrl) URL.revokeObjectURL(aqAudioUrl);
+  aqAudioUrl = URL.createObjectURL(file);
+  const audio = document.getElementById('aq-audio');
+  audio.src = aqAudioUrl;
+  audio.load();
+  audio.onloadedmetadata = () => {
+    document.getElementById('aq-upload-area').style.display = 'none';
+    document.getElementById('aq-controls').style.display = 'block';
+    document.getElementById('aq-audio').style.display = 'none';
+    updateAqTime();
+  };
+}
+
+function clearAudio() {
+  const audio = document.getElementById('aq-audio');
+  audio.pause(); audio.src = '';
+  if (aqAudioUrl) { URL.revokeObjectURL(aqAudioUrl); aqAudioUrl = null; }
+  aqChunkIdx = 0;
+  document.getElementById('aq-upload-area').style.display = 'block';
+  document.getElementById('aq-controls').style.display = 'none';
+  document.getElementById('aq-play-btn').textContent = '▶';
+  document.getElementById('aq-progress-fill').style.width = '0%';
+  document.getElementById('aq-time').textContent = '0:00 / 0:00';
+  document.getElementById('aq-leg-en').textContent = '';
+  document.getElementById('aq-leg-pt').textContent = '';
+  document.getElementById('aq-file-input').value = '';
+}
+
+function aqTogglePlay() {
+  const audio = document.getElementById('aq-audio');
+  const btn = document.getElementById('aq-play-btn');
+  if (audio.paused) {
+    audio.play();
+    btn.textContent = '⏸';
+    // Mark as studied
+    const qa = QA_DATA[aqActive];
+    S.S.aqStudied[qa.id] = true; saveS();
+    const doneEl = document.getElementById('aq-done-' + aqActive);
+    if (doneEl) doneEl.style.display = 'block';
+  } else {
+    audio.pause();
+    btn.textContent = '▶';
+  }
+}
+
+function aqSkip(sec) {
+  const audio = document.getElementById('aq-audio');
+  audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + sec));
+}
+
+function setAqSpeed() {
+  const audio = document.getElementById('aq-audio');
+  audio.playbackRate = parseFloat(document.getElementById('aq-speed').value);
+}
+
+function seekAudio(e) {
+  const audio = document.getElementById('aq-audio');
+  if (!audio.duration) return;
+  const wrap = document.getElementById('aq-progress-wrap');
+  const rect = wrap.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  audio.currentTime = pct * audio.duration;
+}
+
+function syncLegend() {
+  const audio = document.getElementById('aq-audio');
+  const qa = QA_DATA[aqActive];
+  if (!qa || !audio.duration) return;
+
+  // Distribute chunks evenly across audio duration
+  const t = audio.currentTime;
+  const dur = audio.duration;
+  const n = qa.chunks.length;
+  const chunkDur = dur / n;
+  const idx = Math.min(Math.floor(t / chunkDur), n - 1);
+
+  if (idx !== aqChunkIdx) {
+    aqChunkIdx = idx;
+    const chunk = qa.chunks[idx];
+    const enEl = document.getElementById('aq-leg-en');
+    const ptEl = document.getElementById('aq-leg-pt');
+    enEl.textContent = aqLegEN ? chunk.en : '';
+    ptEl.textContent = aqLegPT ? chunk.pt : '';
+    // Animate
+    enEl.style.opacity = '0';
+    ptEl.style.opacity = '0';
+    setTimeout(() => { enEl.style.transition = 'opacity .3s'; enEl.style.opacity = '1';
+                       ptEl.style.transition = 'opacity .3s'; ptEl.style.opacity = '1'; }, 10);
+  }
+
+  // Update progress bar
+  const pct = (t / dur * 100).toFixed(1);
+  document.getElementById('aq-progress-fill').style.width = pct + '%';
+  updateAqTime();
+}
+
+function updateAqTime() {
+  const audio = document.getElementById('aq-audio');
+  const fmt = s => { const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); };
+  document.getElementById('aq-time').textContent = fmt(audio.currentTime || 0) + ' / ' + fmt(audio.duration || 0);
+}
+
+function onAudioEnd() {
+  document.getElementById('aq-play-btn').textContent = '▶';
+  // Update progress bar to 100%
+  document.getElementById('aq-progress-fill').style.width = '100%';
+}
+
+function toggleLegLang(lang) {
+  if (lang === 'en') {
+    aqLegEN = !aqLegEN;
+    const btn = document.getElementById('leg-en-btn');
+    btn.classList.toggle('on', aqLegEN);
+    if (!aqLegEN) document.getElementById('aq-leg-en').textContent = '';
+  } else {
+    aqLegPT = !aqLegPT;
+    const btn = document.getElementById('leg-pt-btn');
+    btn.classList.toggle('on', aqLegPT);
+    if (!aqLegPT) document.getElementById('aq-leg-pt').textContent = '';
+  }
+}
+
+function toggleTranscript() {
+  aqTranscriptOpen = !aqTranscriptOpen;
+  document.getElementById('aq-transcript-body').style.display = aqTranscriptOpen ? 'block' : 'none';
+  document.getElementById('transcript-arrow').textContent = aqTranscriptOpen ? '▲' : '▼';
+}
+
+// Init audio module
+function initAQ() {
+  buildAQList();
+  selectQA(0);
+}
+</script>
