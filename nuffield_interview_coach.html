@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuffield Interview Coach</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #171923;
+    --bg3: #1e2330;
+    --border: #2a3145;
+    --accent: #4f7fff;
+    --accent2: #38d9a9;
+    --accent3: #ffa94d;
+    --danger: #ff6b6b;
+    --text: #e8ecf4;
+    --text2: #8892a4;
+    --text3: #525d72;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  
+  /* HEADER */
+  .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .time-badge { font-size: 12px; color: var(--text2); background: var(--bg3); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
+  .time-badge b { color: var(--accent2); }
+  .days-badge { font-size: 12px; color: var(--text2); }
+  .days-badge b { color: var(--accent3); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 2px; padding: 12px 20px 0; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .tab { padding: 8px 16px; font-size: 13px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; border-radius: 6px 6px 0 0; }
+  .tab:hover { color: var(--text); background: var(--bg3); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  /* CONTENT */
+  .content { padding: 20px; max-width: 760px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+  .card-sm { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 14px; }
+
+  /* BUTTONS */
+  btn, button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3d6ce0; }
+  .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text3); }
+  .btn-green { background: #1a4d3e; color: var(--accent2); border: 1px solid #2a7a5e; }
+  .btn-green:hover { background: #1f5c4a; }
+  .btn-red { background: #4d1f1f; color: var(--danger); border: 1px solid #7a2a2a; }
+  .btn-red:hover { background: #5c2424; }
+  .btn-orange { background: #4d3a1a; color: var(--accent3); border: 1px solid #7a5a28; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-lg { padding: 12px 24px; font-size: 15px; }
+  .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; }
+
+  /* BADGE */
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .badge-blue { background: #1a2a4d; color: var(--accent); }
+  .badge-green { background: #1a3d30; color: var(--accent2); }
+  .badge-orange { background: #3d2a10; color: var(--accent3); }
+  .badge-red { background: #3d1a1a; color: var(--danger); }
+  .badge-gray { background: var(--bg3); color: var(--text2); }
+
+  /* PROGRESS */
+  .progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+  /* TIMER */
+  .timer-ring { width: 120px; height: 120px; margin: 0 auto 16px; position: relative; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring .timer-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--text); }
+  .timer-ring .timer-sub { font-size: 11px; color: var(--text2); margin-top: -4px; }
+
+  /* MIC */
+  .mic-area { text-align: center; padding: 24px 0; }
+  .mic-btn { width: 72px; height: 72px; border-radius: 50%; border: none; cursor: pointer; font-size: 28px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+  .mic-btn.idle { background: var(--bg3); border: 2px solid var(--border); }
+  .mic-btn.listening { background: #4d1f1f; border: 2px solid var(--danger); animation: pulse 1.2s infinite; }
+  .mic-btn.done { background: #1a3d30; border: 2px solid var(--accent2); }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+
+  /* TRANSCRIPT */
+  .transcript { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--text2); min-height: 60px; line-height: 1.6; margin-top: 12px; }
+  .transcript .word-ok { color: var(--accent2); }
+  .transcript .word-miss { color: var(--danger); text-decoration: line-through; }
+  .transcript .word-extra { color: var(--accent3); }
+
+  /* SCORE */
+  .score-row { display: flex; gap: 12px; margin-top: 12px; }
+  .score-box { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
+  .score-val { font-size: 24px; font-weight: 700; }
+  .score-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* KEYWORD PILLS */
+  .kw-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .kw-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .kw-found { background: #1a3d30; color: var(--accent2); border: 1px solid #2a5a45; }
+  .kw-miss { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+  /* QUESTION CARD */
+  .q-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .q-nav .q-count { font-size: 13px; color: var(--text2); }
+  .q-text { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+  .q-tag { font-size: 11px; color: var(--text3); margin-bottom: 16px; }
+  .model-answer { background: var(--bg3); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px; font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 14px; }
+  .model-answer .highlight { color: var(--accent3); font-weight: 600; }
+  .tips-list { list-style: none; }
+  .tips-list li { font-size: 12px; color: var(--text2); padding: 4px 0; padding-left: 16px; position: relative; }
+  .tips-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+
+  /* BLOCOS */
+  .bloco-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+  .bloco-card:hover { border-color: var(--accent); }
+  .bloco-card.playing { border-color: var(--accent2); }
+  .bloco-en { font-size: 14px; color: var(--text); line-height: 1.5; }
+  .bloco-pt { font-size: 12px; color: var(--text3); margin-top: 4px; font-style: italic; }
+  .bloco-controls { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
+
+  /* LIFELINE */
+  .lifeline-card { border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; border: 1px solid; }
+  .lifeline-situation { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .lifeline-phrase { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .lifeline-pt { font-size: 12px; opacity: 0.7; margin-bottom: 12px; }
+
+  /* TIMER MODE */
+  .prompt-box { background: var(--bg3); border: 1px solid var(--accent); border-radius: var(--radius-lg); padding: 20px; text-align: center; margin-bottom: 20px; }
+  .prompt-box .prompt-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .prompt-box .prompt-text { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.5; }
+  .duration-select { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+  .dur-btn { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.15s; }
+  .dur-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* VOCAB */
+  .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .vocab-item { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: border-color 0.15s; }
+  .vocab-item:hover { border-color: var(--accent); }
+  .vocab-item.mastered { border-color: #2a5a45; background: #0f1f1a; }
+  .vocab-en { font-size: 13px; font-weight: 600; color: var(--text); }
+  .vocab-pron { font-size: 11px; color: var(--accent3); margin: 2px 0; }
+  .vocab-pt { font-size: 12px; color: var(--text2); }
+  .vocab-stars { font-size: 14px; margin-top: 6px; }
+
+  /* FOLLOW-UP */
+  .followup-btn { display: block; width: 100%; text-align: left; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; color: var(--text2); cursor: pointer; margin-bottom: 6px; transition: all 0.15s; font-family: inherit; }
+  .followup-btn:hover { border-color: var(--accent3); color: var(--text); }
+
+  /* FEEDBACK OVERLAY */
+  .feedback-overlay { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-top: 16px; }
+  .feedback-verdict { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* INTERVIEW TIMER BAR */
+  .timer-bar-wrap { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .timer-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s linear, background 0.3s; }
+
+  .hidden { display: none !important; }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .center { text-align: center; }
+  .flex { display: flex; align-items: center; }
+  .gap8 { gap: 8px; }
+  .gap12 { gap: 12px; }
+  .flex-1 { flex: 1; }
+
+  /* INTRO CARD */
+  .interview-start { text-align: center; padding: 32px 20px; }
+  .interview-start .big-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .interview-start .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
+  .type-select { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+  .type-btn { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .type-btn.active { border-color: var(--accent); color: var(--accent); background: #1a2a4d; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Nuffield <span>Interview Coach</span></div>
+  <div class="header-right">
+    <div class="days-badge">Entrevista 1 em <b id="days-to-go">--</b> dias</div>
+    <div class="time-badge">Hoje: <b id="today-time">0min</b></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('blocos')">🧩 Blocos</div>
+  <div class="tab" onclick="switchTab('lifelines')">🛟 Lifelines</div>
+  <div class="tab" onclick="switchTab('cronometro')">⏱ Cronômetro</div>
+  <div class="tab" onclick="switchTab('vocab')">📚 Vocabulário</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 2: BLOCOS
+═══════════════════════════════════════════════════════ -->
+<div class="panel active" id="panel-blocos">
+  <div class="section-title">Blocos de conteúdo — memorize e recombine</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Frases curtas sobre seu perfil e projeto. Ouça, repita, grave. Você não precisa decorar respostas inteiras — precisa ter esses blocos prontos para recombinar na hora.</p>
+
+  <div id="blocos-categories"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 3: LIFELINES
+═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-lifelines">
+  <div class="section-title">Frases de socorro — decore 100%</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">Essas frases salvam a entrevista quando você trava. Ouça, repita em voz alta, grave.</p>
+  <div id="lifelines-list"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 4: CRONÔMETRO
+═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-cronometro">
+  <div class="section-title">Treino de fluência cronometrada</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">Fale sobre um tema do seu projeto por 30, 60 ou 90 segundos sem parar. O objetivo é ficar confortável com o silêncio e manter o raciocínio em inglês.</p>
+
+  <div class="card" style="text-align:center;padding:28px;">
+    <div id="ct-prompt-wrap">
+      <div class="prompt-box">
+        <div class="prompt-label">Seu tema de hoje</div>
+        <div class="prompt-text" id="ct-prompt">Toque em "Novo tema" para começar</div>
+      </div>
+      <div class="duration-select">
+        <button class="dur-btn active" onclick="setDuration(30,this)">30s</button>
+        <button class="dur-btn" onclick="setDuration(60,this)">60s</button>
+        <button class="dur-btn" onclick="setDuration(90,this)">90s</button>
+      </div>
+      <div class="flex gap8" style="justify-content:center;margin-bottom:20px;">
+        <button class="btn btn-ghost" onclick="newPrompt()">🎲 Novo tema</button>
+        <button class="btn btn-primary btn-lg" onclick="startCronometro()">▶ Iniciar</button>
+      </div>
+    </div>
+
+    <div id="ct-running" class="hidden">
+      <div class="timer-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg3)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent2)" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="0" id="ct-ring" stroke-linecap="round"/>
+        </svg>
+        <div class="timer-text"><span id="ct-seconds">30</span><br><span class="timer-sub">seg</span></div>
+      </div>
+      <div class="prompt-box" style="margin-bottom:16px;">
+        <div class="prompt-label">Fale sobre</div>
+        <div class="prompt-text" id="ct-prompt-running">—</div>
+      </div>
+      <div class="mic-area" style="padding:0 0 16px;">
+        <button class="mic-btn listening" id="ct-mic-btn" onclick="stopCronometro()">⏹</button>
+        <div style="font-size:12px;color:var(--danger);margin-top:8px;">Gravando... toque para parar</div>
+      </div>
+    </div>
+
+    <div id="ct-done" class="hidden">
+      <div style="font-size:40px;margin-bottom:12px;" id="ct-result-emoji">⏱</div>
+      <div style="font-size:18px;font-weight:700;" id="ct-result-title"></div>
+      <div style="font-size:13px;color:var(--text2);margin:8px 0 20px;" id="ct-result-sub"></div>
+      <div class="flex gap8" style="justify-content:center;">
+        <button class="btn btn-ghost" onclick="resetCronometro()">↩ Tentar de novo</button>
+        <button class="btn btn-primary" onclick="newPromptAndReset()">Novo tema →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0;">
+    <div class="section-title">Histórico de hoje</div>
+    <div id="ct-history" style="font-size:13px;color:var(--text2);">Nenhum treino ainda.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 5: VOCABULÁRIO
+═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-vocab">
+  <div class="section-title">Vocabulário crítico do seu tema</div>
+  <div class="stats-row" style="margin-bottom:16px;">
+    <div class="stat-box"><div class="stat-val" id="v-total">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--accent2);" id="v-mastered">0</div><div class="stat-lbl">Dominadas</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--accent3);" id="v-pct">0%</div><div class="stat-lbl">Progresso</div></div>
+  </div>
+  <div id="vocab-filters" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;"></div>
+  <div class="vocab-grid" id="vocab-grid"></div>
+</div>
+
+</div><!-- /content -->
+
+
+</div><!-- /content -->
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA — v2 (completo, baseado no Q&A integral)
+// ══════════════════════════════════════════════════════════
+
+const INTERVIEW_DATE_1 = new Date('2026-07-01');
+
+// ─────────────────────────────────────────────────────────
+// PERGUNTAS — 25 perguntas cobrindo todo o Q&A
+// type: 'both' | 'br' | 'int'
+// ─────────────────────────────────────────────────────────
+const QUESTIONS = [
+
+  // ── BACKGROUND & MOTIVAÇÃO ──────────────────────────────
+  {
+    id: 1, cat: 'Background', type: 'both',
+    q: "Tell us about yourself.",
+    model: "I grew up on a <mark>farm in Minas Gerais</mark>. I studied agriculture at the <mark>Federal University of Viçosa</mark>. After that, I worked in leadership programs at <mark>Fundação Estudar</mark> — a nonprofit founded by the people behind 3G Capital. I co-founded <mark>Produtor Agro</mark>, an agribusiness marketplace. Today I lead <mark>Agrominas Fertilizantes</mark>, focused on natural fertilizers. I also grow <mark>coffee and oranges</mark> in Minas Gerais. These experiences led me to one question: how can we <mark>finance the transition to regenerative agriculture</mark>?",
+    keywords: ['farm','minas','agriculture','leadership','Estudar','Agrominas','regenerative','finance'],
+    tips: [
+      'Memorize essa como um bloco único — é a base de 40% das outras respostas.',
+      'Pause entre cada fase da sua vida: farm → university → Estudar → Produtor Agro → Agrominas → hoje.',
+      'Sempre termine com sua pergunta de pesquisa — conecta tudo.'
+    ],
+    followups: [
+      'What was it like growing up on a farm?',
+      'How did your time at Fundação Estudar influence your thinking?',
+      'Tell me more about Produtor Agro — what was the challenge?'
+    ]
+  },
+
+  {
+    id: 2, cat: 'Background', type: 'both',
+    q: "What are your main strengths?",
+    model: "My main strength is <mark>connecting people and ideas around a shared goal</mark>. One example: at Fundação Estudar, I helped build a technology scholarship program that increased the percentage of <mark>Brazilians at the world's top universities</mark>. I believe this ability to mobilize and connect will be one of my biggest contributions inside the Nuffield network.",
+    keywords: ['connect','people','ideas','Estudar','universities','mobilize','network'],
+    tips: [
+      'Dê sempre um exemplo concreto — não só o traço, mas a prova.',
+      'Vincule a força ao que você vai oferecer ao Nuffield.'
+    ],
+    followups: [
+      'And what about your weaknesses?',
+      'Can you give me another example of connecting people?'
+    ]
+  },
+
+  {
+    id: 3, cat: 'Background', type: 'both',
+    q: "What are your strengths and weaknesses?",
+    model: "My main strength is <mark>mobilizing people and connecting ideas</mark>. My weaknesses: my <mark>English proficiency</mark> still limits me — I am working on that actively. And I sometimes <mark>underestimate how difficult things can be</mark> — which I try to counter with disciplined planning and testing, like I learned at Produtor Agro.",
+    keywords: ['mobilizing','connecting','english','underestimate','planning','testing'],
+    tips: [
+      'Mencionar inglês como fraqueza aqui é honesto e esperado — não evite.',
+      'Mostre que você aprendeu algo com a segunda fraqueza — isso transforma o ponto fraco em amadurecimento.'
+    ],
+    followups: [
+      'How are you addressing the English limitation specifically?',
+      'Give me an example of underestimating something — what happened?'
+    ]
+  },
+
+  {
+    id: 4, cat: 'Background', type: 'both',
+    q: "What was the biggest professional challenge you've faced?",
+    model: "Doing <mark>online sales to rural producers in 2017</mark>, when platforms like Mercado Livre were still viewed with suspicion by farmers. At Produtor Agro, it took <mark>more than sixty tests</mark> before the first sales came through. We eventually pivoted to focus on <mark>university students in agricultural regions</mark> — the next generation of farm operators. That taught me the value of <mark>disciplined testing when pioneering something disruptive</mark>.",
+    keywords: ['online','rural','producers','sixty','tests','pivot','university','disciplined','testing'],
+    tips: [
+      'Número concreto (60 testes) torna a história memorável — use-o.',
+      'A lição final é o que eles querem ouvir: "disciplined testing when pioneering something disruptive."'
+    ],
+    followups: [
+      'How long did those 60 tests take?',
+      'Did you ever consider giving up?',
+      'What would you do differently today?'
+    ]
+  },
+
+  {
+    id: 5, cat: 'Background', type: 'both',
+    q: "Tell us about a time you failed.",
+    model: "I ran as a candidate for <mark>state representative</mark>, received over <mark>10,000 votes</mark>, and was not elected. The real failure was not losing — it was attempting something <mark>without first understanding the profile it required</mark>. I spent a few months working in Congress afterward, and confirmed that my real place is in <mark>civil society</mark>, not politics.",
+    keywords: ['candidate','representative','votes','failure','profile','civil','society'],
+    tips: [
+      'Essa história é genuinamente interessante — não se desculpe por ela.',
+      'O insight final — "my real place is in civil society" — é forte. Diga com convicção.'
+    ],
+    followups: [
+      'What specifically did you learn from that experience?',
+      'Has that changed how you make major decisions since?'
+    ]
+  },
+
+  {
+    id: 6, cat: 'Background', type: 'both',
+    q: "Tell us about a conflict with a colleague or stakeholder.",
+    model: "Brazil is a <mark>very polarized society</mark>. Being in agribusiness puts me on one end of the political spectrum; advocating for sustainability puts me on the other. This has created real conflicts. My approach: I <mark>listen to the other person's perspective first</mark>, then use <mark>data and evidence</mark> to show we often share more common ground than we think.",
+    keywords: ['polarized','agribusiness','sustainability','listen','data','evidence','common'],
+    tips: [
+      'Essa resposta mostra inteligência emocional e maturidade política — qualidades que o Nuffield valoriza muito.',
+      'A estrutura é: contexto → tensão → minha abordagem. Não pule para a solução sem mostrar o conflito.'
+    ],
+    followups: [
+      'Can you give a specific example of such a conflict?',
+      'How do you handle situations where data doesn\'t change the other person\'s mind?'
+    ]
+  },
+
+  {
+    id: 7, cat: 'Background', type: 'both',
+    q: "What values are non-negotiable for you?",
+    model: "<mark>Commitment</mark> — making a promise and not following through is something that genuinely weighs on me, whether with family, partners, or strangers. And <mark>integrity</mark> — I believe in long-term relationships, and without integrity that simply isn't possible.",
+    keywords: ['commitment','promise','integrity','long-term','relationships'],
+    tips: [
+      'Resposta curta e direta. Não precisa de exemplos aqui — a clareza já impressiona.',
+      'Comprometimento e integridade são exatamente os valores do Nuffield. Essa resposta ressoa.'
+    ],
+    followups: [
+      'Give me an example of a time you had to choose integrity over convenience.',
+      'How do you handle it when others around you don\'t share these values?'
+    ]
+  },
+
+  {
+    id: 8, cat: 'Background', type: 'both',
+    q: "Describe a time you contributed to a community without compensation.",
+    model: "I have been a <mark>teacher at a community college-prep school</mark>, a volunteer at Fundação Estudar, and at <mark>Instituto Four</mark>. Throughout my life many people have opened doors for me. I believe that continuing to <mark>open doors for others</mark> is a way of multiplying that forward — paying it forward, as they say.",
+    keywords: ['teacher','volunteer','Estudar','doors','community','paying','forward'],
+    tips: [
+      'Frase final — "paying it forward" — é conhecida e poderosa em inglês. Memorize.',
+      'Três exemplos concretos em uma frase só. Não precisa desenvolver cada um.'
+    ],
+    followups: [
+      'Why Instituto Four specifically?',
+      'Do you still do any of these activities today?'
+    ]
+  },
+
+  // ── MOTIVAÇÃO NUFFIELD ───────────────────────────────────
+  {
+    id: 9, cat: 'Nuffield', type: 'both',
+    q: "Why do you want to join Nuffield? How can it contribute to you, and how can you contribute to it?",
+    model: "I heard about Nuffield a few years ago and was drawn by two things: the <mark>flexibility it gives scholars</mark> to shape their own agenda, and the quality of the network. My company has <mark>sponsored two scholars</mark>, which gave me an even more positive view. What I lack today are <mark>global references at a personal level</mark> — people I can actually talk to, not just read reports from. I want to be the <mark>connector</mark> who brings those international experiences back to Brazil.",
+    keywords: ['flexibility','scholars','sponsored','global','personal','connector','Brazil','network'],
+    tips: [
+      'Detalhe sobre sponsor é ouro — você conhece o programa de dentro, não só de fora.',
+      'A frase "people I can actually talk to, not just read reports from" é memorável. Use-a.'
+    ],
+    followups: [
+      'Do you know any current or past Nuffield scholars personally?',
+      'What specifically do you hope to learn that you cannot learn from reports?'
+    ]
+  },
+
+  {
+    id: 10, cat: 'Nuffield', type: 'both',
+    q: "Why should Nuffield choose you?",
+    model: "I combine three things that are rarely found together: I am a <mark>rural producer</mark>, an <mark>entrepreneur</mark>, and an <mark>executive with a leadership development background</mark>. That intersection gives me a profile that can contribute different perspectives to different audiences inside the network. And with my connections in Brazil, I can also <mark>connect Nuffield to organizations and people</mark> not yet part of the network.",
+    keywords: ['producer','entrepreneur','executive','leadership','perspectives','connect','organizations','network'],
+    tips: [
+      'Não seja modesto. Essa pergunta pede que você venda seu perfil com clareza.',
+      'A combinação producer + entrepreneur + leadership background é genuinamente rara.'
+    ],
+    followups: [
+      'What makes your profile different from other Brazilian candidates?',
+      'How would you contribute beyond the research report itself?'
+    ]
+  },
+
+  {
+    id: 11, cat: 'Nuffield', type: 'both',
+    q: "Why do this program now, rather than later?",
+    model: "Because I <mark>wake up and go to sleep thinking about it</mark>. I believe this is a <mark>pivotal moment for Brazil to lead</mark> on regenerative agriculture — and that waiting would mean missing the window. I also considered improving my English first, but I believe my <mark>drive to develop this topic</mark> will be the strongest motivator to keep improving my English. And the Nuffield structure — autonomy, network, global exposure — is <mark>exactly the kind of amplifier</mark> my profile needs.",
+    keywords: ['pivotal','moment','Brazil','lead','drive','topic','English','autonomy','amplifier'],
+    tips: [
+      'A frase "wake up and go to sleep thinking about it" é pessoal e autêntica — diga com emoção.',
+      'Tocar no inglês aqui mostra que você pensa no problema honestamente, não defensivamente.'
+    ],
+    followups: [
+      'What would you do if you were not accepted this year?',
+      'Is there a specific event or deadline driving the timing?'
+    ]
+  },
+
+  {
+    id: 12, cat: 'Nuffield', type: 'both',
+    q: "If you're not accepted this year, will you apply again?",
+    model: "Right now all my plans are built around this research project. If I'm not accepted, I'll find other ways to pursue the goal — but I'm not sure I'll have the same <mark>time and priorities</mark> in future years. I will certainly stay close to the network — <mark>if not as a scholar, then as a partner</mark>, which I already am.",
+    keywords: ['plans','research','pursue','time','priorities','partner','network','scholar'],
+    tips: [
+      'Resposta honesta e sem drama. Não prometa que vai tentar de novo — mostra que você é focado neste ciclo.',
+      'Terminar com "already a partner" reforça que seu vínculo com o Nuffield é real.'
+    ],
+    followups: []
+  },
+
+  {
+    id: 13, cat: 'Nuffield', type: 'both',
+    q: "How do you plan to fund your participation? Would Agrominas be a sponsor?",
+    model: "My plan is to seek sponsors from organizations <mark>aligned with the financing topic</mark> — banks with agribusiness portfolios, buyers with regenerative initiatives, and third-sector organizations. I've already mapped the <mark>key decision-makers</mark> at each one. For Agrominas, my plan is to ask for a <mark>paid leave of absence</mark> during the travel periods — not sponsorship — so there's no conflict of interest.",
+    keywords: ['sponsors','aligned','banks','buyers','decision-makers','paid','leave','Agrominas'],
+    tips: [
+      'O detalhe do "paid leave" em vez de sponsorship da própria empresa é sofisticado — mostra que você pensou na independência da pesquisa.',
+      'Mencione 2-3 nomes concretos se conseguir pronunciar: Rabobank, Itaú, Nestlé, Nespresso.'
+    ],
+    followups: [
+      'What do you offer sponsors in return beyond the fiscal benefit?',
+      'How confident are you that you will find funding?',
+      'What is your timeline for approaching sponsors?'
+    ]
+  },
+
+  {
+    id: 14, cat: 'Nuffield', type: 'both',
+    q: "How do you plan to organize yourself for the 12 weeks away?",
+    model: "Agrominas already knows Nuffield — we've been <mark>sponsors for two years</mark>, so they're excited. I've let them know I'll seek other sponsors and will need <mark>schedule flexibility</mark>. On the family side, my wife and I already have experience with extended time apart — she spent a <mark>month at Harvard</mark>, I spent a month in Canada. We manage well.",
+    keywords: ['sponsors','flexibility','family','wife','Harvard','Canada','manage'],
+    tips: [
+      'O exemplo da Harvard e Canadá é concreto e mostra que isso não é teórico para a sua família.',
+      'Resposta curta é suficiente aqui — mostra que você já organizou tudo na cabeça.'
+    ],
+    followups: [
+      'Do you have children? How would you handle that?',
+      'What if a trip coincides with a critical period at work?'
+    ]
+  },
+
+  {
+    id: 15, cat: 'Inglês', type: 'both',
+    q: "How would you assess your current English level for the program?",
+    model: "If the trips were <mark>starting next month, I would not apply</mark> — I understand I couldn't make the most of it. But I have <mark>six months before Zimbabwe</mark>, and I have a concrete study plan I built together with English teachers. I've already been studying since I decided to apply. My core value is <mark>commitment</mark> — and I am committed to being ready.",
+    keywords: ['next','month','six','months','Zimbabwe','plan','teachers','commitment','ready'],
+    tips: [
+      'Essa resposta é perfeita porque é honesta e confiante ao mesmo tempo.',
+      'Diga "Zimbabwe" com confiança — é o nome do destino real, eles sabem que você pesquisou.',
+      'Não minimize o problema nem exagere a solução — o equilíbrio é o que convence.'
+    ],
+    followups: [
+      'What exactly does your study plan look like?',
+      'What happens if your English is still not sufficient when you arrive in Zimbabwe?'
+    ]
+  },
+
+  {
+    id: 16, cat: 'Inglês', type: 'both',
+    q: "What happens if you arrive in Zimbabwe and realize your English still isn't enough?",
+    model: "I've been studying since I decided to apply, and I built this plan <mark>together with English teachers</mark> — so I'm confident in it. But if I get there and it's not sufficient, I will <mark>intensify my study load</mark>. Commitment to my agreements is a core value. I won't arrive unprepared — that would be failing before I even start.",
+    keywords: ['studying','teachers','confident','intensify','commitment','agreements','prepared'],
+    tips: [
+      'Não panique com essa pergunta — ela testa sua resiliência, não seu inglês.',
+      'A frase final — "failing before I even start" — é forte e mostra que você leva isso a sério.'
+    ],
+    followups: [
+      'Have you studied English formally before?',
+      'Do you have a teacher right now?'
+    ]
+  },
+
+  {
+    id: 17, cat: 'Nuffield', type: 'int',
+    q: "The Global Focus Program places you with scholars from different countries and topics. How will you contribute to the group?",
+    model: "I think any <mark>Brazilian already adds value</mark> to a global group — given the scale of agriculture in our country. But beyond that, my experience at the intersection of <mark>leadership, technology, and farming</mark> gives me perspectives that are genuinely different from most. I'm also comfortable building bridges across very different worldviews — that's something I do in Brazil every day, navigating a polarized society.",
+    keywords: ['Brazilian','value','scale','leadership','technology','farming','perspectives','bridges'],
+    tips: [
+      'Mencionar o Brasil como ativo estratégico é sempre bem recebido em contexto internacional — o país é gigante no agro global.',
+      'A referência à polarização brasileira conecta sua vivência à habilidade de navegar diversidade — sofisticado.'
+    ],
+    followups: [
+      'Give me a concrete example of how you would contribute in a group discussion.',
+      'What do you think you will struggle with most in the GFP?'
+    ]
+  },
+
+  // ── TEMA DE PESQUISA ────────────────────────────────────
+  {
+    id: 18, cat: 'Pesquisa', type: 'both',
+    q: "What is regenerative agriculture?",
+    model: "It's a production model that <mark>looks at the farm as a whole system</mark>. It addresses the physical, chemical, and biological dimensions together — not just yield. The result: it can <mark>produce food and regenerate soils and ecosystems</mark> at the same time, while building greater resilience to climate shocks.",
+    keywords: ['system','physical','chemical','biological','food','regenerate','soils','resilience','climate'],
+    tips: [
+      'Definição técnica curta — não precisa ser longa. O que importa é a palavra "system".',
+      'A diferença do convencional: convencional maximiza yield. Regenerativo maximiza o sistema inteiro.'
+    ],
+    followups: [
+      'How is regenerative different from organic?',
+      'Are there scientific consensus studies supporting this?'
+    ]
+  },
+
+  {
+    id: 19, cat: 'Pesquisa', type: 'both',
+    q: "What is your research topic and why did this interest develop?",
+    model: "My research question: <mark>what are the best financial structures to fund the transition to regenerative agriculture?</mark> I grew up watching <mark>profit margins shrink and extreme weather cause losses</mark>. When I found regenerative agriculture, I saw the solution — but also the problem: it requires <mark>more investment in the short term</mark>, even as it pays off in the medium term. That gap — between what we know works and what producers can actually fund — is what I want to close.",
+    keywords: ['financial','structures','transition','regenerative','margins','weather','investment','short','gap','producers'],
+    tips: [
+      'Essa é a resposta mais importante do tema. A estrutura é: problema vivido → solução encontrada → novo problema (o gap) → sua pergunta.',
+      'BCG e Bain: "costs increase and yields decline in the first years" — cite se conseguir.'
+    ],
+    followups: [
+      'Have you personally experienced losses from climate events on your farm?',
+      'When did you first discover regenerative agriculture?',
+      'How long have you been working in natural fertilizers?'
+    ]
+  },
+
+  {
+    id: 20, cat: 'Pesquisa', type: 'both',
+    q: "It seems like you already have the answers. Why is the program still relevant?",
+    model: "I've studied the topic and know the possible paths. But knowing the theory is different from understanding how solutions <mark>reach producers in their daily reality</mark>. What financing actually delivers impact? Which approaches are <mark>replicable in Brazil</mark>? Those answers require being there, talking to the people <mark>actually living the transition</mark> — not reading about it.",
+    keywords: ['theory','producers','daily','reality','impact','replicable','Brazil','talking','living','transition'],
+    tips: [
+      'Não discorde da premissa — aceite-a e vá além. "Yes, I know the paths. But knowing is different from understanding."',
+      'Essa resposta testa se você pensa com humildade intelectual — uma qualidade Nuffield valoriza muito.'
+    ],
+    followups: [
+      'What is the one thing you most want to understand better?',
+      'What would change your mind about your current hypotheses?'
+    ]
+  },
+
+  {
+    id: 21, cat: 'Pesquisa', type: 'both',
+    q: "Why is regenerative agriculture difficult to scale?",
+    model: "When you farm in an integrated way, you work across <mark>more processes at once</mark> — many out of balance under current practices — and there are no standardized tools or techniques as in conventional farming. In the <mark>first years of transition, costs go up and yields go down</mark> — BCG and Bain have documented this. Without financing, the transition is simply <mark>unviable for most producers</mark>.",
+    keywords: ['integrated','processes','conventional','costs','yields','BCG','Bain','financing','unviable','producers'],
+    tips: [
+      'Citar BCG e Bain é poderoso — mostra que você conhece a literatura.',
+      'A frase final — "unviable for most producers" — é o gancho direto para sua pergunta de pesquisa.'
+    ],
+    followups: [
+      'Is it mainly a knowledge problem or a financial problem?',
+      'Are there examples where it scaled successfully?',
+      'What role does technology play?'
+    ]
+  },
+
+  {
+    id: 22, cat: 'Pesquisa', type: 'int',
+    q: "Of banks, buyers, and government — which actor has the most power to move the needle?",
+    model: "Just like regenerative agriculture itself, you have to <mark>look at the whole system</mark>. You need <mark>catalytic capital</mark> from government and nonprofits to de-risk the transition. You need banks that <mark>price the lower risk</mark> of resilient farms into better interest rates. And you need buyers <mark>willing to pay a premium</mark>. Financing the transition only happens through <mark>systemic action</mark> — all three together.",
+    keywords: ['system','catalytic','capital','government','banks','risk','interest','buyers','premium','systemic'],
+    tips: [
+      'Resposta "todos os três juntos" é a correta e a mais sofisticada — não tente escolher um.',
+      'Ordem lógica: catalytic capital (governo) → risk pricing (bancos) → premium (compradores). Essa sequência conta uma história.'
+    ],
+    followups: [
+      'If you had to start with just one actor, which would you choose?',
+      'Are there examples of this systemic approach working somewhere in the world?'
+    ]
+  },
+
+  {
+    id: 23, cat: 'Pesquisa', type: 'int',
+    q: "What does your research bring that's new compared to existing literature?",
+    model: "The literature already shows sustainable production is <mark>viable in the medium term</mark>. What's missing is closing the <mark>financial gap during the transition period itself</mark>. I'm focused on that specific pain point. And I want to focus not just on solutions that exist in theory, but on those that are <mark>actually reaching producers</mark> and becoming real cases — ones that are <mark>more easily replicable in Brazil</mark>.",
+    keywords: ['viable','medium','gap','transition','pain','theory','reaching','producers','replicable','Brazil'],
+    tips: [
+      'Posicione-se como específico onde outros foram amplos. "The literature shows it works. I want to know how to fund it."',
+      '"Replicable in Brazil" é a âncora local — conecta a pesquisa global ao impacto real em casa.'
+    ],
+    followups: [
+      'What existing Nuffield reports cover this area?',
+      'What is your hypothesis about which financing structure works best?'
+    ]
+  },
+
+  {
+    id: 24, cat: 'Pesquisa', type: 'int',
+    q: "Which countries will you visit for your individual research and why?",
+    model: "Four regions. <mark>United States</mark>: Rodale Institute in Pennsylvania — the longest-running comparative trial of regenerative vs conventional. Iowa and Kansas for extension programs and funded transition models. <mark>Europe</mark>: Netherlands, France, and UK for public policies that tie credit access to regenerative practices. <mark>Australia</mark>: carbon credit-based financing, where banks already accept carbon contracts as collateral. <mark>India</mark>: a developing country with scaling challenges similar to Brazil, with pilots of the Societal Thinking methodology.",
+    keywords: ['Rodale','Pennsylvania','Iowa','Europe','Netherlands','France','Australia','carbon','India','scaling'],
+    tips: [
+      'Não tente citar todos os lugares — escolha um ponto forte por região e explique o "por quê".',
+      'Australia é o mais interessante para a banca internacional: carbon credits como colateral bancário é inovador.',
+      'India como comparador ao Brasil é um argumento inteligente — países em desenvolvimento com desafios similares.'
+    ],
+    followups: [
+      'Why not South America — Argentina or Chile?',
+      'What specific organizations will you visit in Australia?',
+      'How will you get access to these institutions?'
+    ]
+  },
+
+  {
+    id: 25, cat: 'Pesquisa', type: 'int',
+    q: "How do you ensure your final report doesn't just gather dust?",
+    model: "The report alone is not enough. Each organization needs to understand not just <mark>what to do and how to do it</mark>, but <mark>why it is advantageous for them</mark>. Senior decision-makers need to see what they gain from a more resilient agriculture system. That framing — the business case for each actor — should be a <mark>central element of every output</mark>, not just an appendix.",
+    keywords: ['organization','what','how','why','advantageous','decision-makers','resilient','business','case','output'],
+    tips: [
+      '"Why advantageous for them" — não para o sistema, mas para cada ator individual. Isso é pensamento estratégico de comunicação.',
+      'Essa resposta mostra que você pensa em implementação, não só em pesquisa. Os avaliadores percebem.'
+    ],
+    followups: [
+      'What format do you imagine for your outputs beyond the written report?',
+      'Have you already identified which organizations would be the primary audience in Brazil?'
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────
+// BLOCOS — 7 categorias, 45 blocos no total
+// ─────────────────────────────────────────────────────────
+const BLOCOS = [
+
+  // ── BLOCOS ORIGINAIS ────────────────────────────────────
+
+  { cat: '👤 Quem sou eu', items: [
+    { en: "I grew up on a farm in rural Minas Gerais, Brazil.", pt: "Cresci numa fazenda no interior de Minas Gerais, Brasil." },
+    { en: "I lived there until I was 17, when I left to study at the Federal University of Viçosa.", pt: "Vivi lá até os 17 anos, quando fui estudar na Universidade Federal de Viçosa." },
+    { en: "I spent years working on leadership programs at Fundação Estudar, a nonprofit founded by the people behind 3G Capital.", pt: "Passei anos trabalhando com programas de liderança na Fundação Estudar, um nonprofit fundado pelas pessoas por trás do 3G Capital." },
+    { en: "I co-founded Produtor Agro, a marketplace for agricultural inputs.", pt: "Cofundei o Produtor Agro, um marketplace de insumos agrícolas." },
+    { en: "Today I lead Agrominas Fertilizantes, a company specialized in natural fertilizers such as magnesium silicate and reactive natural phosphate.", pt: "Hoje lidero a Agrominas Fertilizantes, especializada em fertilizantes naturais como silicato de magnésio e fosfato natural reativo." },
+    { en: "Alongside my career as an executive, I am also a coffee and orange grower in the south of Minas Gerais.", pt: "Além da minha carreira como executivo, também sou produtor de café e laranja no sul de Minas Gerais." }
+  ]},
+
+  { cat: '🌱 Meu tema de pesquisa', items: [
+    { en: "My research question is: what are the best financial structures to fund the transition to regenerative agriculture?", pt: "Minha pergunta de pesquisa é: quais são as melhores estruturas financeiras para financiar a transição para a agricultura regenerativa?" },
+    { en: "Regenerative agriculture looks at the farm as a whole system — physical, chemical, and biological together.", pt: "A agricultura regenerativa olha a fazenda como um sistema inteiro — físico, químico e biológico juntos." },
+    { en: "It can produce food and regenerate soils and ecosystems at the same time.", pt: "Ela consegue produzir alimentos e regenerar solos e ecossistemas ao mesmo tempo." },
+    { en: "In the first years of transition, costs go up and yields go down — BCG and Bain have documented this.", pt: "Nos primeiros anos de transição, os custos sobem e a produtividade cai — BCG e Bain documentaram isso." },
+    { en: "Without financing, the transition is simply unviable for most producers.", pt: "Sem financiamento, a transição é simplesmente inviável para a maioria dos produtores." },
+    { en: "That gap — between what we know works and what producers can actually fund — is what I want to close.", pt: "Esse gap — entre o que sabemos que funciona e o que os produtores conseguem financiar — é o que eu quero fechar." },
+    { en: "I grew up watching profit margins shrink and extreme weather events cause increasingly frequent losses.", pt: "Cresci vendo as margens de lucro encolherem e eventos climáticos extremos causarem perdas cada vez mais frequentes." }
+  ]},
+
+  { cat: '🌍 Por que Nuffield', items: [
+    { en: "I was drawn to Nuffield because of the flexibility it gives scholars to shape their own research agenda.", pt: "Me atraiu no Nuffield a flexibilidade que dá aos scholars para moldar sua própria agenda de pesquisa." },
+    { en: "My company has been a Nuffield sponsor for two years, which gave me an even more positive view of the network.", pt: "Minha empresa é patrocinadora do Nuffield há dois anos, o que me deu uma visão ainda mais positiva da rede." },
+    { en: "What I lack today are global references at a personal level — people I can actually talk to, not just read reports from.", pt: "O que me falta hoje são referências globais em nível pessoal — pessoas com quem eu possa realmente conversar, não apenas ler relatórios." },
+    { en: "I want to be the connector — bridging international experiences and perspectives back to Brazil.", pt: "Quero ser o conector — conectando experiências e perspectivas internacionais de volta ao Brasil." },
+    { en: "I believe this is a pivotal moment for Brazil to lead on the issue of regenerative agriculture.", pt: "Acredito que este é um momento decisivo para o Brasil liderar na questão da agricultura regenerativa." }
+  ]},
+
+  { cat: '💼 Histórias que provam meu perfil', items: [
+    { en: "At Produtor Agro, it took more than sixty tests before the first sales came through.", pt: "No Produtor Agro, foram mais de sessenta testes antes das primeiras vendas acontecerem." },
+    { en: "We eventually pivoted to focus on university students in agricultural regions — the next generation of farm operators.", pt: "Eventualmente pivotamos para focar em estudantes universitários em regiões agrícolas — a próxima geração de operadores rurais." },
+    { en: "That taught me the value of disciplined testing when pioneering something disruptive.", pt: "Isso me ensinou o valor de testes disciplinados quando se está abrindo caminho em algo disruptivo." },
+    { en: "I ran as a candidate for state representative, received over 10,000 votes, and was not elected.", pt: "Me candidatei a deputado estadual, recebi mais de 10 mil votos, e não fui eleito." },
+    { en: "The real failure was not losing — it was attempting something without first understanding the profile it required.", pt: "O verdadeiro fracasso não foi perder — foi tentar algo sem primeiro entender o perfil que exigia." },
+    { en: "I confirmed that my real place is in civil society, not politics.", pt: "Confirmei que meu lugar de verdade é na sociedade civil, não na política." },
+    { en: "At Fundação Estudar, I helped build a technology scholarship program that increased the percentage of Brazilians at the world's top universities.", pt: "Na Fundação Estudar, ajudei a construir um programa de bolsas em tecnologia que aumentou o percentual de brasileiros nas melhores universidades do mundo." }
+  ]},
+
+  { cat: '🤝 Liderança e valores', items: [
+    { en: "My main strength is connecting people and ideas around a shared goal.", pt: "Minha principal força é conectar pessoas e ideias em torno de um objetivo comum." },
+    { en: "Commitment is a non-negotiable value — making a promise and not following through weighs on me.", pt: "Comprometimento é um valor inegociável — fazer uma promessa e não cumprir me pesa." },
+    { en: "Integrity is also non-negotiable — I believe in long-term relationships, and without integrity that isn't possible.", pt: "Integridade também é inegociável — acredito em relações de longo prazo, e sem integridade isso não é possível." },
+    { en: "I have no commitment to being wrong — I change my mind when I see evidence.", pt: "Não tenho compromisso com o erro — mudo de ideia quando vejo evidências." },
+    { en: "I listen to the other person's perspective first, then use data and evidence to find common ground.", pt: "Ouço a perspectiva do outro primeiro, depois uso dados e evidências para encontrar terreno comum." },
+    { en: "I've been a teacher at a community college-prep school and a volunteer at Fundação Estudar and Instituto Four.", pt: "Fui professor em cursinho comunitário e voluntário na Fundação Estudar e no Instituto Four." },
+    { en: "Throughout my life many people opened doors for me. Continuing to open doors for others is a way of paying that forward.", pt: "Ao longo da vida muitas pessoas abriram portas para mim. Continuar abrindo portas para outros é uma forma de multiplicar isso." }
+  ]},
+
+  { cat: '🗺️ Países e argumento técnico', items: [
+    { en: "In the United States, I want to visit the Rodale Institute — responsible for the longest-running comparative trial of regenerative versus conventional farming.", pt: "Nos Estados Unidos, quero visitar o Instituto Rodale — responsável pelo experimento comparativo mais longo de agricultura regenerativa versus convencional." },
+    { en: "In Europe — especially the Netherlands, France, and the UK — there are strong examples of public policies that tie credit access to regenerative practices.", pt: "Na Europa — especialmente Holanda, França e Reino Unido — há fortes exemplos de políticas públicas que vinculam acesso a crédito a práticas regenerativas." },
+    { en: "In Australia, producers are paid to reduce emissions and increase soil carbon. Banks there already accept carbon credits as collateral.", pt: "Na Austrália, produtores são pagos para reduzir emissões e aumentar o carbono no solo. Os bancos lá já aceitam créditos de carbono como garantia." },
+    { en: "In India, a developing country with scaling challenges similar to Brazil, there are farm-level pilots of the Societal Thinking methodology.", pt: "Na Índia, país em desenvolvimento com desafios de escala semelhantes aos do Brasil, há pilotos em nível de fazenda da metodologia Societal Thinking." },
+    { en: "You need catalytic capital from government and nonprofits to de-risk the transition.", pt: "Você precisa de capital catalisador do governo e de nonprofits para reduzir o risco da transição." },
+    { en: "You need banks that price the lower risk of resilient farms into better interest rates.", pt: "Você precisa de bancos que precifiquem o menor risco de fazendas resilientes em taxas de juros melhores." },
+    { en: "And you need buyers willing to pay a premium for better products. All three need to move together.", pt: "E você precisa de compradores dispostos a pagar um prêmio por produtos melhores. Os três precisam se mover juntos." }
+  ]},
+
+  { cat: '🧩 Frases de transição e ponte', items: [
+    { en: "These experiences across leadership, technology, and farming have led me to one question:", pt: "Essas experiências em liderança, tecnologia e produção rural me levaram a uma pergunta:" },
+    { en: "What are the possible arrangements to finance the transition of our production model towards regenerative agriculture?", pt: "Quais são os possíveis arranjos para financiar a transição do nosso modelo de produção para a agricultura regenerativa?" },
+    { en: "I believe this is a high-impact challenge for the resilience and profitability of Brazilian agriculture, as well as for global food security.", pt: "Acredito que este é um desafio de alto impacto para a resiliência e a rentabilidade da agricultura brasileira, bem como para a segurança alimentar global." },
+    { en: "The literature already shows it is viable in the medium term. What's missing is closing the financial gap during the transition itself.", pt: "A literatura já mostra que é viável no médio prazo. O que falta é fechar o gap financeiro durante a própria transição." },
+    { en: "Knowing the theory is different from understanding how solutions reach producers in their daily reality.", pt: "Conhecer a teoria é diferente de entender como as soluções chegam aos produtores em sua realidade cotidiana." },
+    { en: "I'm counting on Nuffield for this challenge.", pt: "Conto com o Nuffield para esse desafio." }
+  ]},
+
+  // ── 🎭 CHAPÉU 1 — ATOR DE DUBLAGEM ─────────────────────
+  // Frases com ritmo, imagem e impacto emocional.
+  // Memorize como linhas de personagem — não como informação.
+
+  { cat: '🎬 Frases que ficam — do "me fale sobre você"', items: [
+    { en: "Hello. My name is Ailton Cunha.", pt: "Olá. Meu nome é Ailton Cunha.", note: "Pausa real depois do 'Hello.' — não apresse." },
+    { en: "I was born and raised on a farm.", pt: "Nasci e cresci em uma fazenda.", note: "Âncora de identidade. Diga antes de qualquer outro detalhe." },
+    { en: "I left the farm at 17 to study agriculture.", pt: "Saí da fazenda aos 17 anos para estudar agricultura.", note: "Movimento — da fazenda para o mundo. Cria arco." },
+    { en: "I've been on both sides — the farm and the boardroom.", pt: "Estive nos dois lados — na fazenda e na sala de reuniões.", note: "Linha de personagem. Define seu perfil único em 10 palavras." },
+    { en: "These experiences led me to one question.", pt: "Essas experiências me levaram a uma pergunta.", note: "Pausa depois dessa frase. Deixe a pergunta chegar." },
+    { en: "I'm counting on Nuffield for this challenge.", pt: "Conto com o Nuffield para esse desafio.", note: "Fechamento perfeito. Diga olhando nos olhos do entrevistador." }
+  ]},
+
+  { cat: '✨ Frases que ficam — linhas de personagem', items: [
+    { en: "I wake up and go to sleep thinking about this problem.", pt: "Acordo e durmo pensando nesse problema.", note: "Abre qualquer resposta sobre motivação. Impossível de fingir." },
+    { en: "I have no commitment to being wrong.", pt: "Não tenho compromisso com o erro.", note: "Paradoxo elegante. 7 palavras que definem seu caráter." },
+    { en: "My real place is in civil society — not politics.", pt: "Meu lugar de verdade é na sociedade civil — não na política.", note: "Linha de chegada da história da candidatura. Diga com convicção." },
+    { en: "Not just reports — people I can actually talk to.", pt: "Não apenas relatórios — pessoas com quem eu possa realmente conversar.", note: "Resume o valor do Nuffield melhor que qualquer parágrafo." },
+    { en: "The transition works. What's missing is the money to start it.", pt: "A transição funciona. O que falta é o dinheiro para começar.", note: "Define o gap da pesquisa. Simples e direto." },
+    { en: "Sixty tests. Then the first sale.", pt: "Sessenta testes. Depois a primeira venda.", note: "Ritmo cinematográfico. A pausa entre as duas frases conta a história." },
+    { en: "If not as a scholar, then as a partner — which I already am.", pt: "Se não como scholar, então como parceiro — o que já sou.", note: "Fecha 'e se não for aceito?' com elegância, sem desespero." },
+    { en: "No money. No transition. It's that simple.", pt: "Sem dinheiro. Sem transição. É simples assim.", note: "Versão em chunks do argumento central. Máxima clareza." },
+    { en: "Brazil can lead this. Right now. That moment is today.", pt: "O Brasil pode liderar isso. Agora. Esse momento é hoje.", note: "Urgência real. Use para 'por que agora?'" }
+  ]},
+
+  { cat: '🖼️ Âncoras sensoriais — imagens concretas', items: [
+    { en: "I watched my father look at the sky, worried about rain that wasn't coming.", pt: "Vi meu pai olhar para o céu, preocupado com uma chuva que não vinha.", note: "Imagem da fazenda. Abre a realidade do produtor rural." },
+    { en: "A farm that regenerates the soil is a farm that survives the next drought.", pt: "Uma fazenda que regenera o solo é uma fazenda que sobrevive à próxima seca.", note: "Torna resiliência concreta. Uma frase, uma imagem, um argumento." },
+    { en: "The producer knows it works. He just can't afford the first two years.", pt: "O produtor sabe que funciona. Ele só não consegue bancar os dois primeiros anos.", note: "Humaniza o problema financeiro. Mais poderoso que qualquer dado." },
+    { en: "In Australia, a carbon contract is already a bank guarantee. That's the future I want for Brazil.", pt: "Na Austrália, um contrato de carbono já é uma garantia bancária. Esse é o futuro que quero para o Brasil.", note: "Conecta país visitado ao impacto em casa. Use na pergunta sobre países." }
+  ]},
+
+  // ── 🎭 CHAPÉU 2 — COACH EXECUTIVO ──────────────────────
+  // Estrutura de resposta, gestão de status, autoridade com língua imperfeita.
+
+  { cat: '🏁 Aberturas de resposta — conclusão primeiro', items: [
+    { en: "I have three things that are rarely found together:", pt: "Tenho três coisas que raramente se encontram juntas:", note: "Abre 'por que escolher você?'. Cria expectativa antes do conteúdo." },
+    { en: "The core problem is simple:", pt: "O problema central é simples:", note: "Abre qualquer resposta técnica sobre o tema. Projeta domínio." },
+    { en: "One thing — personal connections at a global level.", pt: "Uma coisa — conexões pessoais em nível global.", note: "Abre 'por que Nuffield?'. Resposta antes do raciocínio." },
+    { en: "One word: connector.", pt: "Uma palavra: conector.", note: "Abre 'quais suas forças?'. Impacto máximo em duas palavras." },
+    { en: "Honest answer:", pt: "Resposta honesta:", note: "Abre qualquer pergunta sobre inglês ou fraquezas. Desarma a banca." },
+    { en: "Two reasons — complexity and money.", pt: "Dois motivos — complexidade e dinheiro.", note: "Abre 'por que é difícil escalar?'. Estrutura antes do argumento." },
+    { en: "All three — and here's why none of them works alone:", pt: "Os três — e aqui está por que nenhum deles funciona sozinho:", note: "Abre a pergunta dos três atores. Evita a armadilha de escolher um." },
+    { en: "I ran for office. I lost. And I learned something more important than winning:", pt: "Me candidatei. Perdi. E aprendi algo mais importante do que ganhar:", note: "Abre a história de fracasso. Estrutura em três batidas antes do insight." }
+  ]},
+
+  { cat: '⏸️ Pausas com autoridade', items: [
+    { en: "Let me be precise about this.", pt: "Deixa eu ser preciso nisso.", note: "Antes de qualquer resposta técnica. Compra 3 segundos com status." },
+    { en: "That's actually the heart of my research.", pt: "Esse é justamente o coração da minha pesquisa.", note: "Quando a pergunta toca no tema central. Transforma pressão em oportunidade." },
+    { en: "I want to answer that honestly.", pt: "Quero responder isso honestamente.", note: "Antes de perguntas difíceis — inglês, fracasso, fraquezas." },
+    { en: "This is something I think about every day.", pt: "Isso é algo que penso todos os dias.", note: "Para perguntas sobre motivação ou urgência." },
+    { en: "Good — because this is where Brazil is different.", pt: "Bom — porque é aqui que o Brasil é diferente.", note: "Quando perguntam sobre o contexto brasileiro. Transforma o 'local' em ativo." }
+  ]},
+
+  { cat: '🔚 Fechamentos de resposta — sinalize que terminou', items: [
+    { en: "That's the short version.", pt: "Essa é a versão curta.", note: "Sinaliza fim e abre espaço para follow-up sem awkward silence." },
+    { en: "Happy to go deeper on any of those.", pt: "Posso aprofundar qualquer um desses pontos.", note: "Mostra que há mais — projeta profundidade sem forçar." },
+    { en: "So — that's my answer.", pt: "Então — essa é minha resposta.", note: "Fechamento direto. Elimina dúvida sobre se você terminou." },
+    { en: "And that's why I'm here.", pt: "E é por isso que estou aqui.", note: "Fechamento emocional. Funciona para motivação, valores, pesquisa." }
+  ]},
+
+  // ── 🎭 CHAPÉU 3 — INTÉRPRETE CONSECUTIVO ───────────────
+  // Listening estratégico: reconheça o gatilho, ative o bloco certo.
+
+  { cat: '👂 Gatilhos auditivos — ouça e ative', items: [
+    { en: "yourself / background → Quem sou eu", pt: "Se ouvir 'yourself' ou 'background' → ative os blocos de apresentação pessoal.", note: "Trigger: apresentação. Não espere entender a pergunta inteira." },
+    { en: "research / topic / question → Meu tema", pt: "Se ouvir 'research', 'topic' ou 'question' → ative os blocos do tema de pesquisa.", note: "Trigger: pesquisa. Comece com a pergunta de pesquisa." },
+    { en: "why Nuffield / why now → Por que Nuffield", pt: "Se ouvir 'why Nuffield' ou 'why now' → ative os blocos de motivação.", note: "Trigger: motivação. Abra com 'I wake up thinking about this.'" },
+    { en: "contribute / bring / offer → Liderança + conector", pt: "Se ouvir 'contribute', 'bring' ou 'offer' → ative os blocos de liderança.", note: "Trigger: contribuição. Comece com 'One word: connector.'" },
+    { en: "English / language → Abertura honesta", pt: "Se ouvir 'English' ou 'language' → ative a resposta sobre inglês.", note: "Trigger: inglês. Comece com 'Honest answer:'" },
+    { en: "failure / mistake / challenge → Histórias", pt: "Se ouvir 'failure', 'mistake' ou 'challenge' → ative Produtor Agro ou candidatura.", note: "Trigger: fracasso. Escolha a história mais fácil de contar." },
+    { en: "conflict / disagree → Polarização + escuta", pt: "Se ouvir 'conflict' ou 'disagree' → ative a resposta sobre polarização no Brasil.", note: "Trigger: conflito. Comece com 'Brazil is a very polarized society.'" },
+    { en: "scale / difficult / problem → Custos + gap", pt: "Se ouvir 'scale', 'difficult' ou 'problem' → ative os blocos técnicos do tema.", note: "Trigger: escala. Comece com 'Two reasons — complexity and money.'" },
+    { en: "banks / government / buyers → Sistema inteiro", pt: "Se ouvir 'banks', 'government' ou 'buyers' → ative a resposta dos três atores.", note: "Trigger: atores. Comece com 'All three — and here's why...'" },
+    { en: "countries / visit / travel → Países", pt: "Se ouvir 'countries', 'visit' ou 'travel' → ative os blocos de países.", note: "Trigger: países. Comece com Rodale Institute nos EUA." },
+    { en: "report / impact / dust → Impacto real", pt: "Se ouvir 'report', 'impact' ou 'gather dust' → ative a resposta sobre impacto.", note: "Trigger: impacto. Comece com 'The report alone is not enough.'" },
+    { en: "values / non-negotiable → Commitment + integrity", pt: "Se ouvir 'values' ou 'non-negotiable' → ative os blocos de valores.", note: "Trigger: valores. Resposta curta e direta — commitment e integrity." },
+    { en: "fund / sponsor / money → Sponsors + paid leave", pt: "Se ouvir 'fund', 'sponsor' ou 'money' → ative a resposta sobre financiamento.", note: "Trigger: financiamento. Mencione paid leave da Agrominas." },
+    { en: "volunteer / community / compensation → Voluntariado", pt: "Se ouvir 'volunteer' ou 'community' → ative a resposta sobre voluntariado.", note: "Trigger: voluntariado. Professor + Estudar + Instituto Four." },
+    { en: "change / willing / flexible → Sem compromisso com o erro", pt: "Se ouvir 'change', 'willing' ou 'flexible' → ative 'no commitment to being wrong'.", note: "Trigger: abertura. A frase mais memorável sobre sua mentalidade." }
+  ]},
+
+  { cat: '✂️ Respostas em chunks — versões curtas para pressão', items: [
+    { en: "My question: / How do we fund the transition? / To regenerative agriculture.", pt: "Minha pergunta: / Como financiamos a transição? / Para a agricultura regenerativa.", note: "Versão em 3 chunks da pergunta de pesquisa. Cada barra = pausa." },
+    { en: "No money. / No transition. / It's that simple.", pt: "Sem dinheiro. / Sem transição. / É simples assim.", note: "Argumento central em 3 impactos curtos. Use quando travar." },
+    { en: "Brazil can lead this. / Right now. / That moment is today.", pt: "O Brasil pode liderar. / Agora. / Esse momento é hoje.", note: "Argumento de urgência em 3 chunks. Para 'por que agora?'" },
+    { en: "Sixty tests. / Then the first sale. / That taught me everything.", pt: "Sessenta testes. / Depois a primeira venda. / Isso me ensinou tudo.", note: "Versão chunks do Produtor Agro. Três batidas = uma história completa." },
+    { en: "I ran. / I lost. / And I learned something more important than winning.", pt: "Me candidatei. / Perdi. / E aprendi algo mais importante do que ganhar.", note: "Versão chunks da candidatura. Pausa real entre cada uma." },
+    { en: "Government de-risks. / Banks price it. / Buyers pay for it. / All three together.", pt: "Governo reduz o risco. / Bancos precificam. / Compradores pagam. / Os três juntos.", note: "Os três atores em 4 chunks. Cada um é uma peça do sistema." }
+  ]}
+];
+
+// ─────────────────────────────────────────────────────────
+// LIFELINES — 16 frases do Q&A + extras essenciais
+// ─────────────────────────────────────────────────────────
+const LIFELINES = [
+  { situation: 'Abrir a entrevista — diga isso primeiro', color: '#1a2a4d', borderColor: '#4f7fff', textColor: '#b4c4ff',
+    phrase: "My English is still improving, but I'll do my best. I may not express myself perfectly, but I know this topic very well.",
+    pt: "Meu inglês ainda está melhorando, mas farei o meu melhor. Talvez não me expresse perfeitamente, mas conheço muito bem o tema." },
+  { situation: 'Não entendeu a pergunta', color: '#1a3d30', borderColor: '#38d9a9', textColor: '#9ef0d4',
+    phrase: "Could you repeat the question, please?",
+    pt: "Poderia repetir a pergunta, por favor?" },
+  { situation: 'Precisa que falem mais devagar', color: '#1a3d30', borderColor: '#38d9a9', textColor: '#9ef0d4',
+    phrase: "Could you speak a little more slowly, please?",
+    pt: "Poderia falar um pouco mais devagar, por favor?" },
+  { situation: 'Não entendeu completamente', color: '#1a3d30', borderColor: '#38d9a9', textColor: '#9ef0d4',
+    phrase: "Sorry, I didn't fully understand the question. Do you mean…?",
+    pt: "Desculpe, não entendi completamente a pergunta. Você quer dizer…?" },
+  { situation: 'Ganhar tempo para pensar', color: '#3d3010', borderColor: '#ffa94d', textColor: '#ffd28a',
+    phrase: "That's a very good question. Let me think for a moment.",
+    pt: "Essa é uma ótima pergunta. Deixa eu pensar um momento." },
+  { situation: 'Reformular o raciocínio', color: '#2a1a3d', borderColor: '#a78bfa', textColor: '#d0c4ff',
+    phrase: "What I mean is…",
+    pt: "O que quero dizer é…" },
+  { situation: 'Dar sua perspectiva', color: '#2a1a3d', borderColor: '#a78bfa', textColor: '#d0c4ff',
+    phrase: "From my perspective…",
+    pt: "Da minha perspectiva…" },
+  { situation: 'Trazer experiência pessoal', color: '#2a1a3d', borderColor: '#a78bfa', textColor: '#d0c4ff',
+    phrase: "In my experience…",
+    pt: "Na minha experiência…" },
+  { situation: 'Quando travar numa palavra', color: '#3d1a1a', borderColor: '#ff6b6b', textColor: '#ffb4b4',
+    phrase: "I don't know the exact word in English, but…",
+    pt: "Não sei a palavra exata em inglês, mas…" },
+  { situation: 'Explicar de forma mais simples', color: '#3d1a1a', borderColor: '#ff6b6b', textColor: '#ffb4b4',
+    phrase: "How can I explain… In simple terms…",
+    pt: "Como posso explicar… Em termos simples…" },
+  { situation: 'Fazer uma analogia', color: '#1a3020', borderColor: '#69db7c', textColor: '#b2f2bb',
+    phrase: "It's similar to…",
+    pt: "É parecido com…" },
+  { situation: 'Focar no essencial', color: '#1a3020', borderColor: '#69db7c', textColor: '#b2f2bb',
+    phrase: "The main point is…",
+    pt: "O ponto principal é…" },
+  { situation: 'Introduzir contexto brasileiro', color: '#1a2a4d', borderColor: '#4f7fff', textColor: '#b4c4ff',
+    phrase: "In Brazil, we have a good example of this…",
+    pt: "No Brasil, temos um bom exemplo disso…" },
+  { situation: 'Confirmar entendimento', color: '#1a3d30', borderColor: '#38d9a9', textColor: '#9ef0d4',
+    phrase: "Does that make sense?",
+    pt: "Faz sentido?" },
+  { situation: 'Concluir uma resposta', color: '#3d3010', borderColor: '#ffa94d', textColor: '#ffd28a',
+    phrase: "So, in summary…",
+    pt: "Então, em resumo…" },
+  { situation: 'Lembrar que o conteúdo vale mais', color: '#3d1010', borderColor: '#ff8787', textColor: '#ffc9c9',
+    phrase: "I may not express myself perfectly in English, but I know this topic very well.",
+    pt: "Talvez não me expresse perfeitamente em inglês, mas conheço muito bem esse tema." }
+];
+
+// ─────────────────────────────────────────────────────────
+// PROMPTS DO CRONÔMETRO — 20 temas do seu contexto
+// ─────────────────────────────────────────────────────────
+const CT_PROMPTS = [
+  "Talk about your childhood on the farm and how it shaped your vision for agriculture.",
+  "Explain what regenerative agriculture means and why it matters for food security.",
+  "Describe your experience at Fundação Estudar and what you learned about leadership.",
+  "Talk about Produtor Agro — what was the challenge, what were the 60 tests, and what did you learn?",
+  "Explain the financing gap in the transition to regenerative agriculture.",
+  "Talk about why Brazil is important in the global context of sustainable agriculture.",
+  "Describe what you hope to find at the Rodale Institute during your individual research.",
+  "Explain what blended finance means and give an example of how it could work for farmers.",
+  "Talk about a moment when you had to change your mind based on evidence.",
+  "Describe how you would contribute to the Nuffield Global Focus Program group.",
+  "Talk about your values — commitment and integrity — and give a real example of each.",
+  "Explain why you are applying to Nuffield now and not after improving your English.",
+  "Talk about what you are doing to prepare your English for the program.",
+  "Describe the role of buyers like Nestlé and Nespresso in financing the transition.",
+  "Explain why all three actors — government, banks, and buyers — need to act together.",
+  "Talk about your experience running for political office and what you learned.",
+  "Describe why Australia and New Zealand are relevant for your research.",
+  "Explain what catalytic capital means and why it matters for regenerative agriculture.",
+  "Talk about how you plan to ensure your Nuffield report has real impact, not just sit on a shelf.",
+  "Describe the conflict between being in agribusiness and advocating for sustainability in Brazil."
+];
+
+// ─────────────────────────────────────────────────────────
+// VOCABULÁRIO — 35 itens críticos
+// ─────────────────────────────────────────────────────────
+const VOCAB_ITEMS = [
+  { en: "regenerative agriculture", pt: "agricultura regenerativa", pron: "re-DJEN-er-uh-tiv ag-ri-KAL-chur", cat: "Tema" },
+  { en: "blended finance", pt: "financiamento misto / blended finance", pron: "BLEN-did FAI-nans", cat: "Tema" },
+  { en: "transition", pt: "transição", pron: "tran-ZI-shun", cat: "Tema" },
+  { en: "soil health", pt: "saúde do solo", pron: "SOIL helth", cat: "Tema" },
+  { en: "resilience", pt: "resiliência", pron: "ri-ZIL-i-uns", cat: "Tema" },
+  { en: "carbon credits", pt: "créditos de carbono", pron: "KAR-bun KRED-its", cat: "Tema" },
+  { en: "food security", pt: "segurança alimentar", pron: "food si-KYUR-i-tee", cat: "Tema" },
+  { en: "catalytic capital", pt: "capital catalisador", pron: "kat-uh-LIT-ik KAP-i-tul", cat: "Tema" },
+  { en: "ecosystem services", pt: "serviços ecossistêmicos", pron: "EE-koh-sis-tem SER-vis-iz", cat: "Tema" },
+  { en: "profit margins", pt: "margens de lucro", pron: "PROF-it MAR-jinz", cat: "Tema" },
+  { en: "financing gap", pt: "lacuna de financiamento", pron: "FAI-nan-sing gap", cat: "Tema" },
+  { en: "MRV technology", pt: "tecnologia de Monitoramento, Reporte e Verificação", pron: "em-ar-vee", cat: "Tema" },
+  { en: "to scale", pt: "escalar", pron: "to SKAYL", cat: "Verbos" },
+  { en: "to finance / to fund", pt: "financiar / custear", pron: "to FAI-nans / to FUND", cat: "Verbos" },
+  { en: "to replicate", pt: "replicar", pron: "to REP-li-kayt", cat: "Verbos" },
+  { en: "to implement", pt: "implementar", pron: "to IM-pli-ment", cat: "Verbos" },
+  { en: "to mobilize", pt: "mobilizar", pron: "to MOH-bi-laiz", cat: "Verbos" },
+  { en: "to de-risk", pt: "reduzir o risco", pron: "to dee-RISK", cat: "Verbos" },
+  { en: "to pioneer", pt: "ser pioneiro", pron: "to py-uh-NEER", cat: "Verbos" },
+  { en: "non-profit organization", pt: "organização sem fins lucrativos", pron: "non-PROF-it", cat: "Programa" },
+  { en: "scholarship", pt: "bolsa de estudos", pron: "SKOL-ur-ship", cat: "Programa" },
+  { en: "scholar", pt: "bolsista / pesquisador", pron: "SKOL-ur", cat: "Programa" },
+  { en: "research agenda", pt: "agenda de pesquisa", pron: "REE-surch uh-JEN-duh", cat: "Programa" },
+  { en: "global network", pt: "rede global", pron: "GLOH-bul NET-wurk", cat: "Programa" },
+  { en: "paid leave of absence", pt: "licença remunerada", pron: "payd leev ov AB-suns", cat: "Programa" },
+  { en: "leadership development", pt: "desenvolvimento de liderança", pron: "LEE-dur-ship", cat: "Liderança" },
+  { en: "stakeholders", pt: "partes interessadas", pron: "STAYK-hohl-durz", cat: "Liderança" },
+  { en: "commitment", pt: "comprometimento", pron: "kuh-MIT-ment", cat: "Liderança" },
+  { en: "integrity", pt: "integridade", pron: "in-TEG-ri-tee", cat: "Liderança" },
+  { en: "disciplined testing", pt: "testes disciplinados", pron: "DIS-uh-plind TES-ting", cat: "Liderança" },
+  { en: "paying it forward", pt: "multiplicar o bem recebido", pron: "PAY-ing it FOR-werd", cat: "Liderança" },
+  { en: "Rodale Institute", pt: "Instituto Rodale (EUA)", pron: "ROH-dayl IN-sti-tyoot", cat: "Países" },
+  { en: "carbon sequestration", pt: "sequestro de carbono", pron: "KAR-bun see-kwes-TRAY-shun", cat: "Países" },
+  { en: "collateral", pt: "garantia / colateral", pron: "kuh-LAT-er-ul", cat: "Países" },
+  { en: "extension programs", pt: "programas de extensão rural", pron: "eks-TEN-shun", cat: "Países" }
+];
+// STATE & STORAGE
+// ══════════════════════════════════════════════════════════
+const STORE_KEY = 'nuffield_coach';
+let state = {
+  vocabProgress: {}, // word -> {mastered, reps}
+  ctHistory: [],     // [{date, prompt, duration, completed}]
+  simHistory: [],    // [{date, qId, timeSpent, keywordsFound}]
+  todaySeconds: 0,
+  lastDate: ''
+};
+
+function loadState() {
+  try { const s = localStorage.getItem(STORE_KEY); if (s) state = JSON.parse(s); } catch(e) {}
+  const today = new Date().toISOString().split('T')[0];
+  if (state.lastDate !== today) { state.todaySeconds = 0; state.lastDate = today; }
+}
+function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {} }
+
+// ══════════════════════════════════════════════════════════
+// TIME TRACKER
+// ══════════════════════════════════════════════════════════
+let lastTick = Date.now();
+let trackActive = false;
+function tick() {
+  const now = Date.now();
+  const diff = (now - lastTick) / 1000;
+  lastTick = now;
+  if (trackActive && diff < 5) { state.todaySeconds += diff; }
+  updateTimeDisplay();
+}
+function startTracking() { trackActive = true; lastTick = Date.now(); }
+function stopTracking() { trackActive = false; }
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopTracking(); else { startTracking(); lastTick = Date.now(); }});
+['click','keydown','touchstart'].forEach(e => document.addEventListener(e, () => { lastTick = Date.now(); }));
+setInterval(tick, 1000);
+setInterval(saveState, 5000);
+
+function updateTimeDisplay() {
+  const m = Math.floor(state.todaySeconds / 60);
+  document.getElementById('today-time').textContent = m + 'min';
+}
+
+// DAYS COUNTDOWN
+function updateDaysDisplay() {
+  const now = new Date();
+  const diff = Math.ceil((INTERVIEW_DATE_1 - now) / 86400000);
+  document.getElementById('days-to-go').textContent = diff > 0 ? diff : '🎯';
+}
+
+// ══════════════════════════════════════════════════════════
+// SPEECH
+// ══════════════════════════════════════════════════════════
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));
+  u.lang = 'en-US'; u.rate = 0.88; u.pitch = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const en = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
+          || voices.find(v => v.lang.startsWith('en-US'))
+          || voices.find(v => v.lang.startsWith('en'));
+  if (en) u.voice = en;
+  window.speechSynthesis.speak(u);
+}
+
+let recognition = null;
+let recognizing = false;
+function initRecognition(onResult, onEnd) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('Use Chrome para reconhecimento de voz.'); return null; }
+  const r = new SR();
+  r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
+  r.onresult = onResult; r.onend = onEnd;
+  r.onerror = (e) => { recognizing = false; console.warn('SR error', e.error); };
+  return r;
+}
+
+function normalizeText(s) {
+  return s.toLowerCase().replace(/<[^>]+>/g,'').replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
+}
+
+function scoreKeywords(transcript, keywords) {
+  const t = normalizeText(transcript);
+  return keywords.map(kw => ({ kw, found: t.includes(normalizeText(kw)) }));
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const activeTab = [...document.querySelectorAll('.tab')].find(t => t.getAttribute('onclick').includes("'" + tab + "'"));
+  if (activeTab) activeTab.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'vocab') renderVocab();
+  if (tab === 'blocos') renderBlocos();
+  if (tab === 'lifelines') renderLifelines();
+}
+
+// ══════════════════════════════════════════════════════════
+// BLOCOS
+// ══════════════════════════════════════════════════════════
+function renderBlocos() {
+  const container = document.getElementById('blocos-categories');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Dividers by category INDEX (robust — no emoji string matching)
+  const dividers = {
+    7: { label: '🎭 Chapéu 1 — Ator de dublagem', sub: 'Ritmo, imagem e impacto emocional. Memorize como linhas de personagem — não como informação.' },
+    10: { label: '🎭 Chapéu 2 — Coach executivo', sub: 'Estrutura de resposta e autoridade com língua imperfeita.' },
+    13: { label: '🎭 Chapéu 3 — Intérprete consecutivo', sub: 'Listening estratégico: reconheça a palavra-gatilho, ative o bloco certo.' },
+  };
+
+  BLOCOS.forEach(function(cat, ci) {
+    // Insert professional divider before this category if applicable
+    if (dividers[ci]) {
+      var div = document.createElement('div');
+      div.style.cssText = 'margin:28px 0 14px;padding:12px 16px;background:#1e2330;border-left:3px solid #4f7fff;border-radius:0 10px 10px 0;';
+      div.innerHTML = '<div style="font-size:14px;font-weight:700;color:#4f7fff;margin-bottom:3px;">' + dividers[ci].label + '</div>'
+                    + '<div style="font-size:12px;color:#8892a4;">' + dividers[ci].sub + '</div>';
+      container.appendChild(div);
+    }
+
+    var sec = document.createElement('div');
+    var title = document.createElement('div');
+    title.className = 'section-title';
+    title.style.marginTop = '14px';
+    title.innerHTML = escHtml(cat.cat) + ' <span style="font-weight:400;color:#525d72">(' + cat.items.length + ')</span>';
+    sec.appendChild(title);
+
+    cat.items.forEach(function(item, i) {
+      var safeEn = item.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      var card = document.createElement('div');
+      card.className = 'bloco-card';
+
+      var html = '<div class="bloco-en">' + escHtml(item.en) + '</div>'
+               + '<div class="bloco-pt">' + escHtml(item.pt) + '</div>';
+      if (item.note) {
+        html += '<div style="font-size:11px;color:#ffa94d;margin-top:6px;padding-top:6px;border-top:1px solid #2a3145;">💡 ' + escHtml(item.note) + '</div>';
+      }
+      html += '<div class="bloco-controls">'
+            + '<button class="btn btn-ghost btn-sm" onclick="speak(\'' + safeEn + '\')">🔊 Ouvir</button>'
+            + '<button class="btn btn-ghost btn-sm" onclick="speakSlow(\'' + safeEn + '\')">🐢 Devagar</button>'
+            + '</div>';
+      card.innerHTML = html;
+      sec.appendChild(card);
+    });
+    container.appendChild(sec);
+  });
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function speakSlow(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.65;
+  window.speechSynthesis.speak(u);
+}
+
+// ══════════════════════════════════════════════════════════
+// LIFELINES
+// ══════════════════════════════════════════════════════════
+function renderLifelines() {
+  const container = document.getElementById('lifelines-list');
+  container.innerHTML = '';
+  LIFELINES.forEach((ll, i) => {
+    const card = document.createElement('div');
+    card.className = 'lifeline-card';
+    card.style.cssText = `background:${ll.color};border-color:${ll.borderColor}`;
+    card.innerHTML = `
+      <div class="lifeline-situation" style="color:${ll.borderColor}">${ll.situation}</div>
+      <div class="lifeline-phrase" style="color:${ll.textColor}">"${ll.phrase}"</div>
+      <div class="lifeline-pt" style="color:${ll.textColor}">${ll.pt}</div>
+      <div class="flex gap8">
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:${ll.textColor};border:1px solid rgba(255,255,255,0.2);" onclick="speak('${ll.phrase.replace(/'/g,"\\'")}')">🔊 Ouvir</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:${ll.textColor};border:1px solid rgba(255,255,255,0.2);" onclick="speakSlow('${ll.phrase.replace(/'/g,"\\'")}')">🐢 Devagar</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// SIMULADOR
+// ══════════════════════════════════════════════════════════
+let simType = 'br';
+let simQueue = [];
+let simIndex = 0;
+let simTimerInterval = null;
+let simElapsed = 0;
+let simTranscript = '';
+let simRec = null;
+let simRecognizing = false;
+
+function selectSimType(t, el) {
+  simType = t;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function startSimulator() {
+  let pool = QUESTIONS.filter(q => simType === 'both' || q.type === simType || q.type === 'both');
+  // Shuffle
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  simQueue = pool.slice(0, simType === 'br' ? 6 : 8);
+  simIndex = 0;
+  document.getElementById('sim-start').classList.add('hidden');
+  document.getElementById('sim-result').classList.add('hidden');
+  document.getElementById('sim-session').classList.remove('hidden');
+  loadSimQuestion();
+}
+
+function loadSimQuestion() {
+  if (simIndex >= simQueue.length) { showSimResult(); return; }
+  const q = simQueue[simIndex];
+  document.getElementById('sim-q-badge').textContent = `Q${simIndex+1}/${simQueue.length}`;
+  document.getElementById('sim-q-cat').textContent = q.cat;
+  document.getElementById('sim-q-text').textContent = q.q;
+  document.getElementById('sim-q-tag').textContent = '';
+  // Model answer
+  document.getElementById('sim-model').innerHTML = q.model;
+  document.getElementById('sim-model').classList.add('hidden');
+  const tipsList = document.getElementById('sim-tips');
+  tipsList.innerHTML = q.tips.map(t => `<li>${t}</li>`).join('');
+  tipsList.classList.add('hidden');
+  document.querySelector('#sim-model-wrap button').style.display = '';
+  // Follow-ups
+  const fu = document.getElementById('sim-followups');
+  fu.innerHTML = q.followups.map(f => `<button class="followup-btn" onclick="speak('${f.replace(/'/g,"\\'")}')">🔊 ${f}</button>`).join('');
+  // Mic reset
+  resetSimMic();
+  // Timer bar reset
+  document.getElementById('sim-timer-bar').style.width = '100%';
+  document.getElementById('sim-timer-bar').style.background = 'var(--accent2)';
+  // Feedback hide
+  document.getElementById('sim-feedback').classList.add('hidden');
+  // Transcript hide
+  document.getElementById('sim-transcript').classList.add('hidden');
+  // Speak question
+  setTimeout(() => speak(q.q), 300);
+}
+
+function toggleModel() {
+  const m = document.getElementById('sim-model');
+  const t = document.getElementById('sim-tips');
+  const btn = document.querySelector('#sim-model-wrap button');
+  if (m.classList.contains('hidden')) { m.classList.remove('hidden'); t.classList.remove('hidden'); btn.textContent = 'Esconder resposta'; }
+  else { m.classList.add('hidden'); t.classList.add('hidden'); btn.textContent = 'Ver resposta modelo'; }
+}
+
+function resetSimMic() {
+  simElapsed = 0; simTranscript = '';
+  if (simTimerInterval) clearInterval(simTimerInterval);
+  if (simRec) { try { simRec.abort(); } catch(e){} simRec = null; }
+  simRecognizing = false;
+  const mic = document.getElementById('sim-mic');
+  mic.className = 'mic-btn idle'; mic.textContent = '🎙';
+  document.getElementById('sim-mic-label').textContent = 'Toque para responder';
+  document.getElementById('sim-timer-display').classList.add('hidden');
+}
+
+function simToggleMic() {
+  if (simRecognizing) { simStopMic(); return; }
+  simStartMic();
+}
+
+function simStartMic() {
+  simTranscript = ''; simElapsed = 0;
+  const mic = document.getElementById('sim-mic');
+  mic.className = 'mic-btn listening'; mic.textContent = '⏹';
+  document.getElementById('sim-mic-label').textContent = 'Gravando... toque para parar';
+  document.getElementById('sim-timer-display').classList.remove('hidden');
+  document.getElementById('sim-feedback').classList.add('hidden');
+  document.getElementById('sim-transcript').classList.add('hidden');
+
+  simTimerInterval = setInterval(() => {
+    simElapsed++;
+    const d = document.getElementById('sim-timer-display');
+    const m = Math.floor(simElapsed/60); const s = simElapsed%60;
+    d.textContent = m + ':' + String(s).padStart(2,'0');
+    // Timer bar (target: 60s for br, 90s for int)
+    const target = simType === 'br' ? 60 : 90;
+    const pct = Math.min(simElapsed / target * 100, 100);
+    const bar = document.getElementById('sim-timer-bar');
+    bar.style.width = (100 - pct) + '%';
+    bar.style.background = pct < 70 ? 'var(--accent2)' : pct < 90 ? 'var(--accent3)' : 'var(--danger)';
+  }, 1000);
+
+  simRec = initRecognition(
+    (e) => { let t=''; for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) t+=e.results[i][0].transcript+' '; simTranscript += t; },
+    () => { if(simRecognizing){simRec.start();} }
+  );
+  if (!simRec) return;
+  simRecognizing = true;
+  simRec.start();
+}
+
+function simStopMic() {
+  simRecognizing = false;
+  if (simTimerInterval) clearInterval(simTimerInterval);
+  if (simRec) { try { simRec.stop(); } catch(e){} }
+  const mic = document.getElementById('sim-mic');
+  mic.className = 'mic-btn done'; mic.textContent = '✓';
+  document.getElementById('sim-mic-label').textContent = 'Resposta gravada';
+  showSimFeedback();
+}
+
+function showSimFeedback() {
+  const q = simQueue[simIndex];
+  const target = simType === 'br' ? 60 : 90;
+  const t = simElapsed;
+  const kwResults = scoreKeywords(simTranscript, q.keywords);
+  const found = kwResults.filter(k => k.found).length;
+  const pct = Math.round(found / q.keywords.length * 100);
+
+  // Verdict
+  let verdict = '', vcolor = '';
+  if (t < 15) { verdict = '⚡ Muito curto — expanda'; vcolor = 'var(--danger)'; }
+  else if (t <= target * 1.1) { verdict = '✅ Tempo ideal!'; vcolor = 'var(--accent2)'; }
+  else { verdict = '⏰ Um pouco longo'; vcolor = 'var(--accent3)'; }
+
+  document.getElementById('sim-verdict').textContent = verdict;
+  document.getElementById('sim-verdict').style.color = vcolor;
+
+  // Scores
+  const m = Math.floor(t/60), s = t%60;
+  document.getElementById('sim-scores').innerHTML = `
+    <div class="score-box"><div class="score-val" style="color:${t<=target*1.1?'var(--accent2)':'var(--accent3)'}">
+      ${m>0?m+'m ':''}${s}s</div><div class="score-lbl">Tempo</div></div>
+    <div class="score-box"><div class="score-val" style="color:${pct>=60?'var(--accent2)':'var(--accent3)'}">
+      ${pct}%</div><div class="score-lbl">Palavras-chave</div></div>
+    <div class="score-box"><div class="score-val">${found}/${q.keywords.length}</div><div class="score-lbl">Detectadas</div></div>
+  `;
+
+  // Keywords
+  const kwRow = document.getElementById('sim-keywords');
+  kwRow.innerHTML = kwResults.map(k =>
+    `<span class="kw-pill ${k.found?'kw-found':'kw-miss'}">${k.found?'✓':'✗'} ${k.kw}</span>`
+  ).join('');
+
+  // Transcript
+  if (simTranscript.trim()) {
+    const tr = document.getElementById('sim-transcript');
+    tr.textContent = simTranscript.trim() || '(nada detectado)';
+    tr.classList.remove('hidden');
+  }
+
+  document.getElementById('sim-feedback').classList.remove('hidden');
+
+  // Save to history
+  state.simHistory.push({ date: new Date().toISOString(), qId: q.id, time: t, kwPct: pct });
+  saveState();
+}
+
+function simRetry() { resetSimMic(); document.getElementById('sim-feedback').classList.add('hidden'); document.getElementById('sim-transcript').classList.add('hidden'); }
+function simNext() { simIndex++; loadSimQuestion(); }
+function endSimulator() { if(simRecognizing)simStopMic(); showSimResult(); }
+
+function showSimResult() {
+  document.getElementById('sim-session').classList.add('hidden');
+  const res = document.getElementById('sim-result');
+  res.classList.remove('hidden');
+  document.getElementById('sim-result-text').textContent = `Você praticou ${simIndex} perguntas nesta sessão.`;
+  document.getElementById('sim-result-stats').innerHTML = `
+    <div class="stat-box"><div class="stat-val" style="color:var(--accent)">${simIndex}</div><div class="stat-lbl">Perguntas</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--accent2)">${state.simHistory.length}</div><div class="stat-lbl">Total histórico</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--accent3)">${Math.floor(state.todaySeconds/60)}min</div><div class="stat-lbl">Hoje</div></div>
+  `;
+}
+
+function resetSimulator() {
+  document.getElementById('sim-result').classList.add('hidden');
+  document.getElementById('sim-start').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════════
+// CRONÔMETRO
+// ══════════════════════════════════════════════════════════
+let ctDuration = 30;
+let ctPromptText = '';
+let ctRunning = false;
+let ctInterval = null;
+let ctElapsed = 0;
+let ctRec = null;
+let ctRecognizing = false;
+
+function setDuration(d, el) {
+  ctDuration = d;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function newPrompt() {
+  const p = CT_PROMPTS[Math.floor(Math.random() * CT_PROMPTS.length)];
+  ctPromptText = p;
+  document.getElementById('ct-prompt').textContent = p;
+}
+
+function startCronometro() {
+  if (!ctPromptText) { newPrompt(); }
+  document.getElementById('ct-prompt-running').textContent = ctPromptText;
+  document.getElementById('ct-prompt-wrap').classList.add('hidden');
+  document.getElementById('ct-running').classList.remove('hidden');
+  document.getElementById('ct-done').classList.add('hidden');
+
+  ctElapsed = 0; ctRunning = true;
+  const total = 327; // SVG circle circumference
+  updateRing(ctDuration, ctDuration, total);
+
+  ctInterval = setInterval(() => {
+    ctElapsed++;
+    const remaining = ctDuration - ctElapsed;
+    document.getElementById('ct-seconds').textContent = Math.max(0, remaining);
+    updateRing(remaining, ctDuration, total);
+    const ring = document.getElementById('ct-ring');
+    ring.style.stroke = remaining > ctDuration * 0.4 ? 'var(--accent2)' : remaining > ctDuration * 0.15 ? 'var(--accent3)' : 'var(--danger)';
+    if (ctElapsed >= ctDuration) { stopCronometro(true); }
+  }, 1000);
+
+  // Start recognition
+  ctRec = initRecognition(
+    () => {},
+    () => { if(ctRecognizing) ctRec.start(); }
+  );
+  if (ctRec) { ctRecognizing = true; ctRec.start(); }
+}
+
+function updateRing(remaining, total, circum) {
+  const pct = Math.max(0, remaining / total);
+  document.getElementById('ct-ring').style.strokeDashoffset = circum * (1 - pct);
+}
+
+function stopCronometro(completed) {
+  ctRunning = false;
+  if (ctInterval) clearInterval(ctInterval);
+  ctRecognizing = false;
+  if (ctRec) { try { ctRec.stop(); } catch(e){} }
+
+  document.getElementById('ct-running').classList.add('hidden');
+  document.getElementById('ct-done').classList.remove('hidden');
+
+  const pct = ctElapsed / ctDuration;
+  if (completed || pct >= 0.9) {
+    document.getElementById('ct-result-emoji').textContent = '🎉';
+    document.getElementById('ct-result-title').textContent = 'Parabéns! Você completou os ' + ctDuration + ' segundos.';
+    document.getElementById('ct-result-sub').textContent = 'Continue assim. Cada sessão aumenta sua confiança.';
+  } else if (pct >= 0.5) {
+    document.getElementById('ct-result-emoji').textContent = '👍';
+    document.getElementById('ct-result-title').textContent = Math.round(ctElapsed) + 's de ' + ctDuration + 's — bom progresso!';
+    document.getElementById('ct-result-sub').textContent = 'Tente completar o tempo inteiro na próxima.';
+  } else {
+    document.getElementById('ct-result-emoji').textContent = '💪';
+    document.getElementById('ct-result-title').textContent = 'Curto, mas é um começo!';
+    document.getElementById('ct-result-sub').textContent = 'Trave menos — use frases simples e continue falando mesmo com erros.';
+  }
+
+  // History
+  state.ctHistory.unshift({ date: new Date().toISOString(), prompt: ctPromptText.slice(0,50), duration: ctDuration, elapsed: Math.round(ctElapsed) });
+  state.ctHistory = state.ctHistory.slice(0, 20);
+  saveState();
+  renderCtHistory();
+}
+
+function resetCronometro() {
+  document.getElementById('ct-prompt-wrap').classList.remove('hidden');
+  document.getElementById('ct-running').classList.add('hidden');
+  document.getElementById('ct-done').classList.add('hidden');
+  document.getElementById('ct-seconds').textContent = ctDuration;
+}
+
+function newPromptAndReset() {
+  newPrompt();
+  resetCronometro();
+}
+
+function renderCtHistory() {
+  const el = document.getElementById('ct-history');
+  const today = state.ctHistory.filter(h => h.date.startsWith(new Date().toISOString().split('T')[0]));
+  if (today.length === 0) { el.textContent = 'Nenhum treino hoje ainda.'; return; }
+  el.innerHTML = today.map(h => `
+    <div class="flex gap8 mt8" style="font-size:12px;">
+      <span class="badge ${h.elapsed >= h.duration * 0.9 ? 'badge-green' : 'badge-orange'}">${h.elapsed}/${h.duration}s</span>
+      <span style="color:var(--text2)">${h.prompt}...</span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// VOCAB
+// ══════════════════════════════════════════════════════════
+let vocabFilter = 'Todos';
+
+function renderVocab() {
+  const cats = ['Todos', ...new Set(VOCAB_ITEMS.map(v => v.cat))];
+  const filterEl = document.getElementById('vocab-filters');
+  filterEl.innerHTML = cats.map(c => `
+    <button class="btn btn-sm ${c===vocabFilter?'btn-primary':'btn-ghost'}" onclick="setVocabFilter('${c}')">${c}</button>
+  `).join('');
+
+  const items = vocabFilter === 'Todos' ? VOCAB_ITEMS : VOCAB_ITEMS.filter(v => v.cat === vocabFilter);
+  const grid = document.getElementById('vocab-grid');
+  grid.innerHTML = items.map((item, i) => {
+    const key = 'v_' + item.en;
+    const prog = state.vocabProgress[key] || { reps: 0, mastered: false };
+    const stars = '⭐'.repeat(Math.min(prog.reps, 3)) + '☆'.repeat(Math.max(0, 3 - prog.reps));
+    return `
+      <div class="vocab-item ${prog.mastered ? 'mastered' : ''}" onclick="vocabTap('${key}', '${item.en.replace(/'/g,"\\'")}')">
+        <div class="vocab-en">${item.en}</div>
+        <div class="vocab-pron">${item.pron}</div>
+        <div class="vocab-pt">${item.pt}</div>
+        <div class="flex gap8 mt8">
+          <div class="vocab-stars">${stars}</div>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;" onclick="event.stopPropagation();speak('${item.en.replace(/'/g,"\\'")}')">🔊</button>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;" onclick="event.stopPropagation();vocabMark('${key}',${JSON.stringify(item).replace(/"/g,'&quot;')})">✓</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateVocabStats();
+}
+
+function setVocabFilter(cat) { vocabFilter = cat; renderVocab(); }
+
+function vocabTap(key, word) { speak(word); }
+
+function vocabMark(key, item) {
+  if (typeof item === 'string') item = JSON.parse(item);
+  const prog = state.vocabProgress[key] || { reps: 0, mastered: false };
+  prog.reps = Math.min(prog.reps + 1, 3);
+  prog.mastered = prog.reps >= 3;
+  state.vocabProgress[key] = prog;
+  saveState();
+  renderVocab();
+}
+
+function updateVocabStats() {
+  const total = VOCAB_ITEMS.length;
+  const mastered = VOCAB_ITEMS.filter(v => (state.vocabProgress['v_' + v.en] || {}).mastered).length;
+  document.getElementById('v-total').textContent = total;
+  document.getElementById('v-mastered').textContent = mastered;
+  document.getElementById('v-pct').textContent = Math.round(mastered/total*100) + '%';
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+loadState();
+updateTimeDisplay();
+updateDaysDisplay();
+startTracking();
+newPrompt();
+renderCtHistory();
+renderBlocos();
+renderLifelines();
+// Pre-load voices
+if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = () => {}; window.speechSynthesis.getVoices(); }
+</script>
+</body>
+</html>
